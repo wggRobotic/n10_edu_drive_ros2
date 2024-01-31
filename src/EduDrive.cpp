@@ -6,6 +6,8 @@
 #include "sensor_msgs/msg/imu.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include <fcntl.h>
+#include <linux/gpio.h>
+#include <sys/ioctl.h>
 
 
 namespace edu
@@ -119,14 +121,16 @@ namespace edu
         }
 
         // This is added for the RPi version using GPIO16 to enable all motor controllers
-        int fd = open("/sys/class/gpio/gpio16/value", O_WRONLY);
+        /*int fd = open("/sys/class/gpio/gpio16/value", O_WRONLY);
         if (fd == -1)
         {
             RCLCPP_WARN_STREAM(this->get_logger(), "Unable to enable motor controllers. It the GPIO16 pin configured as output?");
             return;
         }
         write(fd, "1", 1);
-        close(fd);
+        close(fd);*/
+
+        gpio_write("/dev/gpiochip0", 16, 1);
 
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
         {
@@ -141,7 +145,7 @@ namespace edu
         RCLCPP_INFO(this->get_logger(), "Disabling robot");
 
         // This is added for the RPi version using GPIO16 to enable all motor controllers
-        int fd = open("/sys/class/gpio/gpio16/value", O_WRONLY);
+        /*int fd = open("/sys/class/gpio/gpio16/value", O_WRONLY);
         if (fd == -1)
         {
             RCLCPP_WARN_STREAM(this->get_logger(), "Unable to disable motor controllers. It the GPIO16 pin configured as output?");
@@ -151,7 +155,9 @@ namespace edu
         {
             write(fd, "0", 1);
             close(fd);
-        }
+        }*/
+
+        gpio_write("/dev/gpiochip0", 16, 0);
 
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
             (*it)->disable();
@@ -340,6 +346,41 @@ namespace edu
             RCLCPP_WARN_STREAM(this->get_logger(), "Lag detected ... deactivate motor control");
             disable();
         }
+    }
+
+    int EduDrive::gpio_write(const char *dev_name, int offset, int value)
+    {
+        struct gpiohandle_request rq;
+        struct gpiohandle_data data;
+        int fd, ret;
+        std::cout << "Write value " << value << " to GPIO at offset " << offset << " (OUTPUT mode) on chip " << dev_name << std::endl;
+        fd = open(dev_name, O_RDONLY);
+        if (fd < 0)
+        {
+            std::cout << "Unabled to open " << dev_name << ": " << strerror(errno) << std::endl;
+            return -1;
+        }
+        rq.lineoffsets[0] = offset;
+        rq.flags = GPIOHANDLE_REQUEST_OUTPUT;
+        rq.lines = 1;
+        ret = ioctl(fd, GPIO_GET_LINEHANDLE_IOCTL, &rq);
+        close(fd);
+        if (ret == -1)
+        {
+            std::cout << "Unable to line handle from ioctl: " << strerror(errno) << std::endl;
+            return -1;
+        }
+        data.values[0] = value;
+        ret = ioctl(rq.fd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &data);
+        if (ret == -1)
+        {
+            std::cout << "Unable to set line value using ioctl: " << strerror(errno) << std::endl;
+            return -1;
+        }
+
+        close(rq.fd);
+        
+        return 1;
     }
 
 } // namespace
