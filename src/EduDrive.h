@@ -38,10 +38,10 @@ public:
     ~EduDrive();
 
     /**
-     * @brief Constructor
+     * @brief Initialize the Drive
      *
      */
-    void parameterizeDrive(std::vector<ControllerParams> cp, SocketCAN& can, bool verbosity=false);
+    void initDrive(std::vector<ControllerParams> cp, SocketCAN& can, bool verbosity=false);
 
     /**
      * @brief Blocking ROS handler method. Call this method to enter the ROS message loop.

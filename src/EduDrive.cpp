@@ -26,7 +26,7 @@ namespace edu
         delete _carrier;
     }
 
-    void EduDrive::parameterizeDrive(std::vector<ControllerParams> cp, SocketCAN &can, bool verbosity)
+    void EduDrive::initDrive(std::vector<ControllerParams> cp, SocketCAN &can, bool verbosity)
     {
         _verbosity = verbosity;
         _enabled = false;

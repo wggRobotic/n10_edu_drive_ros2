@@ -77,29 +77,29 @@ int main(int argc, char *argv[])
       cp.antiWindup     = antiWindup;
       
       std::string controllerID = std::string("controller") + std::to_string(c);
-      edu_drive_node->declare_parameter(controllerID + "/canID", 0);
-      edu_drive_node->declare_parameter(controllerID + "/gearRatio", 0.f);
-      edu_drive_node->declare_parameter(controllerID + "/encoderRatio", 0.f);
-      edu_drive_node->declare_parameter(controllerID + "/rpmMax", 0.f);
-      edu_drive_node->declare_parameter(controllerID + "/invertEnc", 0);
+      edu_drive_node->declare_parameter(controllerID + std::string(".canID"), 0);
+      edu_drive_node->declare_parameter(controllerID + std::string(".gearRatio"), 0.f);
+      edu_drive_node->declare_parameter(controllerID + std::string(".encoderRatio"), 0.f);
+      edu_drive_node->declare_parameter(controllerID + std::string(".rpmMax"), 0.f);
+      edu_drive_node->declare_parameter(controllerID + std::string(".invertEnc"), 0);
 
-      cp.canID        = edu_drive_node->get_parameter(controllerID + "/canID").as_int();
-      cp.gearRatio    = edu_drive_node->get_parameter(controllerID + "/gearRatio").as_double();
-      cp.encoderRatio = edu_drive_node->get_parameter(controllerID + "/encoderRatio").as_double();
-      cp.rpmMax       = edu_drive_node->get_parameter(controllerID + "/rpmMax").as_double();
-      cp.invertEnc    = edu_drive_node->get_parameter(controllerID + "/invertEnc").as_int();
+      cp.canID        = edu_drive_node->get_parameter(controllerID + std::string(".canID")).as_int();
+      cp.gearRatio    = edu_drive_node->get_parameter(controllerID + std::string(".gearRatio")).as_double();
+      cp.encoderRatio = edu_drive_node->get_parameter(controllerID + std::string(".encoderRatio")).as_double();
+      cp.rpmMax       = edu_drive_node->get_parameter(controllerID + std::string(".rpmMax")).as_double();
+      cp.invertEnc    = edu_drive_node->get_parameter(controllerID + std::string(".invertEnc")).as_int();
 
       cp.responseMode   = (responseMode==0 ? edu::CAN_RESPONSE_RPM : edu::CAN_RESPONSE_POS);
 
       // --- Motor parameters ---------
       for(int d=0; d<2; d++)
       {
-         std::string driveID = controllerID + std::string("/drive") + std::to_string(d);
-         edu_drive_node->declare_parameter(driveID + "/channel", 0);
-         edu_drive_node->declare_parameter<std::vector<double>>(driveID + "/kinematics", std::vector<double>{0.0,0.0,0.0});
+         std::string driveID = controllerID + std::string(".drive") + std::to_string(d);
+         edu_drive_node->declare_parameter(driveID + std::string(".channel"), 0);
+         edu_drive_node->declare_parameter<std::vector<double>>(driveID + std::string(".kinematics"), std::vector<double>{0.0,0.0,0.0});
 
-         cp.motorParams[d].channel = edu_drive_node->get_parameter(driveID + "/channel").as_int();
-         cp.motorParams[d].kinematics = edu_drive_node->get_parameter(driveID + "/kinematics").as_double_array();
+         cp.motorParams[d].channel = edu_drive_node->get_parameter(driveID + std::string(".channel")).as_int();
+         cp.motorParams[d].kinematics = edu_drive_node->get_parameter(driveID + std::string(".kinematics")).as_double_array();
       }
       // ------------------------------
 
@@ -115,6 +115,6 @@ int main(int argc, char *argv[])
 
    bool verbosity = false;
 
-   edu_drive_node->parameterizeDrive(controllerParams, can, verbosity);
+   edu_drive_node->initDrive(controllerParams, can, verbosity);
    edu_drive_node->run();
 }
