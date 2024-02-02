@@ -113,7 +113,9 @@ int main(int argc, char *argv[])
    //std::cout << "CAN Interface: " << canInterface << std::endl;
    RCLCPP_INFO_STREAM(edu_drive_node->get_logger(), "CAN Interface: " << canInterface);
 
-   bool verbosity = false;
+   bool verbosity;
+   edu_drive_node->declare_parameter("verbosity", false);
+   verbosity = edu_drive_node->get_parameter("verbosity").as_bool();
 
    edu_drive_node->initDrive(controllerParams, can, verbosity);
    edu_drive_node->run();

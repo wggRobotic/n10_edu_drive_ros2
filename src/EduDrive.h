@@ -12,6 +12,7 @@
 #include "std_srvs/srv/set_bool.hpp"
 #include "MotorController.h"
 #include "CarrierBoard.h"
+#include "PowerManagementBoard.h"
 
 namespace edu
 {
@@ -95,10 +96,13 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubCurrentDrive;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr              _pubIMU;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr    _pubOrientation;
+    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltagePwrMgmt;
+    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubCurrentPwrMgmt;
 
     rclcpp::Time _lastCmd;       // Time elapsed since last call
     std::vector<MotorController*>  _mc;
     CarrierBoard* _carrier;
+    PowerManagementBoard* _pwr_mgmt;
 
     double _vMax;
     double _omegaMax;

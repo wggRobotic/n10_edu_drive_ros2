@@ -50,7 +50,12 @@ namespace edu
         _pubIMU          = this->create_publisher<sensor_msgs::msg::Imu>("imu", 1);
         _pubOrientation  = this->create_publisher<geometry_msgs::msg::PoseStamped>("pose", 1);
 		
+        //Publisher of power management shield
+        _pubVoltagePwrMgmt = this->create_publisher<std_msgs::msg::Float32>("voltagePwrMgmt", 1);
+        _pubCurrentPwrMgmt = this->create_publisher<std_msgs::msg::Float32>("currentPwrMgmt", 1);
+
         _carrier = new CarrierBoard(&can, verbosity);
+        _pwr_mgmt = new PowerManagementBoard(&can, verbosity);
         
         _vMax = 0.f;
 
@@ -112,7 +117,8 @@ namespace edu
     {
         RCLCPP_INFO(this->get_logger(), "Enabling robot");
 
-        float voltageDrive = _carrier->getVoltageDrive();
+        //float voltageDrive = _carrier->getVoltageDrive();
+        float voltageDrive = _pwr_mgmt->getVoltage();
         
         if(voltageDrive < 3.0)
         {
@@ -243,6 +249,7 @@ namespace edu
     void EduDrive::receiveCAN()
     {
         float voltageDrive = _carrier->getVoltageDrive();
+        float voltagePwrMgmt = _pwr_mgmt->getVoltage();
         
         std_msgs::msg::Float32MultiArray msgRPM;
         std_msgs::msg::ByteMultiArray msgEnabled;
@@ -259,7 +266,7 @@ namespace edu
             bool enableState = false;
             if(controllersInitialized)
             {
-                if(voltageDrive > 3.0)
+                if(voltageDrive > 3.0 || voltagePwrMgmt > 3.0) //@ToDo: find nicer solution
                 {                    
                     if((*it)->checkConnectionStatus(200))
                     {
@@ -269,13 +276,13 @@ namespace edu
                     else
                     {
                         //std::cout << "#EduDrive Error synchronizing with device" << (*it)->getCanId() << std::endl;
-                        RCLCPP_INFO_STREAM(this->get_logger(), "#EduDrive Error synchronizing with device" << (*it)->getCanId());   
+                        RCLCPP_WARN_STREAM(this->get_logger(), "#EduDrive Error synchronizing with device" << (*it)->getCanId());   
                     }
                 }
                 else
                 {
                     //std::cout << "#EduDrive Low voltage on drive power supply rail for device " << (*it)->getCanId() << std::endl;
-                    RCLCPP_INFO_STREAM(this->get_logger(), "#EduDrive Low voltage on drive power supply rail for device " << (*it)->getCanId());
+                    RCLCPP_WARN_STREAM(this->get_logger(), "#EduDrive Low voltage on drive power supply rail for device " << (*it)->getCanId());
                     
                     (*it)->deinit();
                     disable();
@@ -318,6 +325,14 @@ namespace edu
         std_msgs::msg::Float32 msgCurrentDrive;
         msgCurrentDrive.data = _carrier->getCurrentDrive();
         _pubCurrentDrive->publish(msgCurrentDrive);
+
+        std_msgs::msg::Float32 msgVoltagePwrMgmt;
+        msgVoltagePwrMgmt.data = voltagePwrMgmt;
+        _pubVoltagePwrMgmt->publish(msgVoltagePwrMgmt);
+
+        std_msgs::msg::Float32 msgCurrentPwrMgmt;
+        msgCurrentPwrMgmt.data = _pwr_mgmt->getCurrent();
+        _pubCurrentPwrMgmt->publish(msgCurrentPwrMgmt);
 
         double q[4];
         _carrier->getOrientation(q);

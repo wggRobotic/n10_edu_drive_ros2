@@ -19,6 +19,7 @@ namespace edu
 #define SYSID_LIGHT       0b010 // Lighting shields with ToF sensors
 #define SYSID_RPI_ADAPTER 0b011
 #define SYSID_MC2         0b100 // Motorcontroller (Version for RPi4 and IOT)
+#define SYSID_PWRMGMT     0b101
 
 #define RPI_ADAPTER      0b0000001
 #define IOT_SHIELD       0b0000001
@@ -26,6 +27,7 @@ namespace edu
 #define NODEID_HEADRIGHT 0b0000010
 #define NODEID_TAILLEFT  0b0000011
 #define NODEID_TAILRIGHT 0b0000100
+#define NODEID_PWRMGMT   0b0000000
 
 /**
  * Motor commands
