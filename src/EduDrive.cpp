@@ -28,11 +28,12 @@ namespace edu
         delete _carrier;
     }
 
-    void EduDrive::initDrive(std::vector<ControllerParams> cp, SocketCAN &can, bool verbosity)
+    void EduDrive::initDrive(std::vector<ControllerParams> cp, SocketCAN &can, bool using_pwr_mgmt, bool verbosity)
     {
+        _using_pwr_mgmt = using_pwr_mgmt;
         _verbosity = verbosity;
         _enabled = false;
-
+        
         _subJoy     = this->create_subscription<sensor_msgs::msg::Joy>("joy", 1, std::bind(&EduDrive::joyCallback, this, std::placeholders::_1));
         _subVel     = this->create_subscription<geometry_msgs::msg::Twist>("vel/teleop", 10, std::bind(&EduDrive::velocityCallback, this, std::placeholders::_1));
         _srvEnable  = this->create_service<std_srvs::srv::SetBool>("enable", std::bind(&EduDrive::enableCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -117,26 +118,22 @@ namespace edu
     {
         RCLCPP_INFO(this->get_logger(), "Enabling robot");
 
-        //float voltageDrive = _carrier->getVoltageDrive();
-        float voltageDrive = _pwr_mgmt->getVoltage();
-        
-        if(voltageDrive < 3.0)
+        // Get system voltage from Power Management Board or Carrier Board
+        float voltage = (_using_pwr_mgmt ? _pwr_mgmt->getVoltage() :  _carrier->getVoltageDrive());
+                
+        if(voltage < 3.0)
         {
             RCLCPP_WARN_STREAM(this->get_logger(), "Unable to enable motor controllers. Low voltage on motor power supply rail");
             return;
         }
 
-        // This is added for the RPi version using GPIO16 to enable all motor controllers
-        /*int fd = open("/sys/class/gpio/gpio16/value", O_WRONLY);
-        if (fd == -1)
-        {
-            RCLCPP_WARN_STREAM(this->get_logger(), "Unable to enable motor controllers. It the GPIO16 pin configured as output?");
-            return;
+        if(_using_pwr_mgmt){
+            // Let power management board set hardware enable
+            _pwr_mgmt->enable();
+        }else{
+            // Set hardware enable with RPI GPIO
+            gpio_write("/dev/gpiochip0", 16, 1);
         }
-        write(fd, "1", 1);
-        close(fd);*/
-
-        gpio_write("/dev/gpiochip0", 16, 1);
 
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
         {
@@ -150,20 +147,13 @@ namespace edu
     {
         RCLCPP_INFO(this->get_logger(), "Disabling robot");
 
-        // This is added for the RPi version using GPIO16 to enable all motor controllers
-        /*int fd = open("/sys/class/gpio/gpio16/value", O_WRONLY);
-        if (fd == -1)
-        {
-            RCLCPP_WARN_STREAM(this->get_logger(), "Unable to disable motor controllers. It the GPIO16 pin configured as output?");
-            // At this point we go on to send at least the disable command via CAN.
+        if(_using_pwr_mgmt){
+            // Let power management board reset hardware enable
+            _pwr_mgmt->disable();
+        }else{
+            // Reset hardware enable with RPI GPIO
+            gpio_write("/dev/gpiochip0", 16, 0);
         }
-        else
-        {
-            write(fd, "0", 1);
-            close(fd);
-        }*/
-
-        gpio_write("/dev/gpiochip0", 16, 0);
 
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
             (*it)->disable();
@@ -368,11 +358,11 @@ namespace edu
         struct gpiohandle_request rq;
         struct gpiohandle_data data;
         int fd, ret;
-        std::cout << "Write value " << value << " to GPIO at offset " << offset << " (OUTPUT mode) on chip " << dev_name << std::endl;
+        
         fd = open(dev_name, O_RDONLY);
         if (fd < 0)
         {
-            std::cout << "Unabled to open " << dev_name << ": " << strerror(errno) << std::endl;
+            RCLCPP_WARN_STREAM(this->get_logger(), "Unabled to open " << dev_name << ": " << strerror(errno) << std::endl);
             return -1;
         }
         rq.lineoffsets[0] = offset;
@@ -382,20 +372,58 @@ namespace edu
         close(fd);
         if (ret == -1)
         {
-            std::cout << "Unable to line handle from ioctl: " << strerror(errno) << std::endl;
+            RCLCPP_WARN_STREAM(this->get_logger(), "Unable to line handle from ioctl: " << strerror(errno) << std::endl);
             return -1;
         }
         data.values[0] = value;
         ret = ioctl(rq.fd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &data);
         if (ret == -1)
         {
-            std::cout << "Unable to set line value using ioctl: " << strerror(errno) << std::endl;
+            RCLCPP_WARN_STREAM(this->get_logger(), "Unable to set line value using ioctl: " << strerror(errno) << std::endl);
             return -1;
+        }else{
+            if(_verbosity) std::cout << "Wrote value " << value << " to GPIO at offset " << offset << " (OUTPUT mode) on chip " << dev_name << std::endl;
         }
 
         close(rq.fd);
-        
         return 1;
+    }
+
+    int EduDrive::gpio_read(const char *dev_name, int offset, int &value)
+    {
+        struct gpiohandle_request rq;
+        struct gpiohandle_data data;
+        int fd, ret;
+        fd = open(dev_name, O_RDONLY);
+        if (fd < 0)
+        {
+             RCLCPP_WARN_STREAM(this->get_logger(), "Unabled to open " << dev_name << ", " << strerror(errno) << std::endl);
+            return -1;
+        }
+        rq.lineoffsets[0] = offset;
+        rq.flags = GPIOHANDLE_REQUEST_INPUT;
+        rq.lines = 1;
+        ret = ioctl(fd, GPIO_GET_LINEHANDLE_IOCTL, &rq);
+        close(fd);
+        if (ret == -1)
+        {
+             RCLCPP_WARN_STREAM(this->get_logger(), "Unable to get line handle from ioctl : " << strerror(errno) << std::endl);
+            return -1;
+        }
+        ret = ioctl(rq.fd, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &data);
+        if (ret == -1)
+        {
+            RCLCPP_WARN_STREAM(this->get_logger(), "Unable to get line value using ioctl : " << strerror(errno) << std::endl);
+            return -1;
+        }
+        else
+        {
+            if(_verbosity) std::cout << "Value of GPIO at offset " << offset << " (INPUT mode) on chip " << dev_name << ": " << data.values[0] << std::endl;
+        }
+
+        close(rq.fd);
+        value = data.values[0];
+        return 1;    
     }
 
 } // namespace

@@ -27,6 +27,18 @@ public:
    * Destructor
    */
   ~PowerManagementBoard();
+
+    /**
+   * Set hardware enable signal
+   * @return successful transmission of enable command
+   */
+  bool enable();
+
+  /**
+   * Reset hardware enable signal
+   * @return successful transmission of disabling command
+   */
+  bool disable();
   
   /**
    * @brief Get voltage of main power rail

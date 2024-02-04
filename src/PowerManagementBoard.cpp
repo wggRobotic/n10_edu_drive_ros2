@@ -9,8 +9,9 @@ namespace edu
 
 PowerManagementBoard::PowerManagementBoard(SocketCAN* can, bool verbosity)
 {
-  _init = false;
+  _init      = false;
   _verbosity = verbosity;
+  _can       = can;
   
   _voltage = 0.f;
   _current = 0.f;
@@ -35,6 +36,20 @@ PowerManagementBoard::PowerManagementBoard(SocketCAN* can, bool verbosity)
 PowerManagementBoard::~PowerManagementBoard()
 {
 
+}
+
+bool PowerManagementBoard::enable()
+{
+  _cf.can_dlc = 1;
+  _cf.data[0] = CMD_PWR_MGMT_ENABLE;
+  return _can->send(&_cf);
+}
+
+bool PowerManagementBoard::disable()
+{
+  _cf.can_dlc = 1;
+  _cf.data[0] = CMD_PWR_MGMT_DISABLE;
+  return _can->send(&_cf);
 }
 
 float PowerManagementBoard::getVoltage()

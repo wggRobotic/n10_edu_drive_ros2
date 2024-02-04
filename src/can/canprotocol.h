@@ -30,6 +30,13 @@ namespace edu
 #define NODEID_PWRMGMT   0b0000000
 
 /**
+ * Power management commands
+ */
+// Common parameters
+#define CMD_PWR_MGMT_ENABLE       0x01
+#define CMD_PWR_MGMT_DISABLE      0x02
+
+/**
  * Motor commands
  */
 // Common parameters

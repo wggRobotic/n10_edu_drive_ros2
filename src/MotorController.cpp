@@ -27,13 +27,13 @@ MotorController::MotorController(SocketCAN* can, ControllerParams params, bool v
     std::cout << "ki             = " << params.ki << std::endl;
     std::cout << "kd             = " << params.kd << std::endl;
     std::cout << "antiWindup     = " << params.antiWindup << std::endl;
-    std::cout << "invertEnc      = " << params.invertEnc << std::endl;
     std::cout << "responseMode   = " << params.responseMode << std::endl;
 
     std::cout << std::endl << "--- Controller #" << params.canID << " parameters ---" << std::endl;
     std::cout << "    gearRatio      = " << params.gearRatio << std::endl;
     std::cout << "    encoderRatio   = " << params.encoderRatio << std::endl;
     std::cout << "    rpmMax         = " << params.rpmMax << std::endl;
+    std::cout << "    invertEnc      = " << params.invertEnc << std::endl;
 
     for(int i=0; i<2; i++)
     {

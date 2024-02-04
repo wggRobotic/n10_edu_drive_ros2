@@ -42,7 +42,7 @@ public:
      * @brief Initialize the Drive
      *
      */
-    void initDrive(std::vector<ControllerParams> cp, SocketCAN& can, bool verbosity=false);
+    void initDrive(std::vector<ControllerParams> cp, SocketCAN& can, bool using_pwr_mgmt=true, bool verbosity=false);
 
     /**
      * @brief Blocking ROS handler method. Call this method to enter the ROS message loop.
@@ -79,6 +79,8 @@ private:
 
     int gpio_write(const char *dev_name, int offset, int value);
 
+    int gpio_read(const char *dev_name, int offset, int &value);
+
     void controlMotors(float vFwd, float vLeft, float omega);
 
     bool enableCallback(const std::shared_ptr<rmw_request_id_t> header, const std::shared_ptr<std_srvs::srv::SetBool_Request> request, const std::shared_ptr<std_srvs::srv::SetBool_Response> response);
@@ -108,6 +110,7 @@ private:
     double _omegaMax;
 
     bool _enabled;
+    bool _using_pwr_mgmt;
     bool _verbosity;
 };
 

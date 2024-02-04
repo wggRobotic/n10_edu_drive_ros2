@@ -12,18 +12,21 @@ int main(int argc, char *argv[])
    std::vector<edu::ControllerParams> controllerParams;
 
    // --- System parameters --------
+   bool usingPwrMgmt;
    std::string canInterface;
    int frequencyScale;
    float inputWeight;
    int maxPulseWidth;
    int timeout;
    
+   edu_drive_node->declare_parameter("usingPowerManagementBoard", true);
    edu_drive_node->declare_parameter("canInterface", std::string("can0"));
    edu_drive_node->declare_parameter("frequencyScale", 32);
    edu_drive_node->declare_parameter("inputWeight", 0.8f);
    edu_drive_node->declare_parameter("maxPulseWidth", 50);
    edu_drive_node->declare_parameter("timeout", 300);
 
+   usingPwrMgmt = edu_drive_node->get_parameter("usingPowerManagementBoard").as_bool();
    canInterface = edu_drive_node->get_parameter("canInterface").as_string();
    frequencyScale = edu_drive_node->get_parameter("frequencyScale").as_int();
    inputWeight = edu_drive_node->get_parameter("inputWeight").as_double();
@@ -39,21 +42,18 @@ int main(int argc, char *argv[])
    float ki;
    float kd;
    int antiWindup;
-   int invertEnc;
    int responseMode;
 
    edu_drive_node->declare_parameter("kp", 0.0f);
    edu_drive_node->declare_parameter("ki", 0.f);
    edu_drive_node->declare_parameter("kd", 0.f);
    edu_drive_node->declare_parameter("antiWindup", 1);
-   edu_drive_node->declare_parameter("invertEnc", 0);
    edu_drive_node->declare_parameter("responseMode", 0);
 
    kp = edu_drive_node->get_parameter("kp").as_double();
    ki = edu_drive_node->get_parameter("ki").as_double();
    kd = edu_drive_node->get_parameter("kd").as_double();
    antiWindup   = edu_drive_node->get_parameter("antiWindup").as_int();
-   invertEnc    = edu_drive_node->get_parameter("invertEnc").as_int();
    responseMode = edu_drive_node->get_parameter("responseMode").as_int();
 
    // -----------------------------
@@ -117,6 +117,6 @@ int main(int argc, char *argv[])
    edu_drive_node->declare_parameter("verbosity", false);
    verbosity = edu_drive_node->get_parameter("verbosity").as_bool();
 
-   edu_drive_node->initDrive(controllerParams, can, verbosity);
+   edu_drive_node->initDrive(controllerParams, can, usingPwrMgmt, verbosity);
    edu_drive_node->run();
 }
