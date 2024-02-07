@@ -1,5 +1,7 @@
 /**:
   ros__parameters:
+    usingPowerManagementBoard: true
+    verbosity: false
     canInterface: can0
     frequencyScale: 32
     inputWeight: 0.2
@@ -9,7 +11,6 @@
     ki: 3.1
     kd: 0.0
     antiWindup: 1
-    invertEnc: 0
     responseMode: 0
     
     controllers: 2
@@ -19,6 +20,7 @@
       gearRatio: 44.0
       encoderRatio: 1024.0
       rpmMax: 134.0
+      invertEnc: 0
       drive0:
         channel: 0
         kinematics: [16.0, 0.0, -3.48]
