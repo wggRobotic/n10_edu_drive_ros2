@@ -26,6 +26,7 @@ Please notice also, that the ROS variable ROS_DOMAIN_ID should be set properly.
 
 | tag    | description      |
 | ------ |:--|
+| usingPowerManagementBoard | Define if a Power Management Board is used, default is "true"
 | verbosity      | Display status messages for debugging, default is "false"
 | canInterface   | SocketCAN interface, e.g. can0       |
 | frequencyScale | Divider of PWM frequency, Base frequency: 500kHz (Divider=1)     |
