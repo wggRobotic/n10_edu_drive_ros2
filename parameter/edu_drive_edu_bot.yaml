@@ -4,10 +4,10 @@
     verbosity: false
     canInterface: can0
     frequencyScale: 32
-    inputWeight: 0.5
+    inputWeight: 0.2
     maxPulseWidth: 100
     timeout: 300
-    kp: 2.0
+    kp: 0.5
     ki: 7.0
     kd: 0.0
     antiWindup: 1
@@ -18,25 +18,25 @@
     controller0:
       canID: 0
       gearRatio: 89.0
-      encoderRatio: 4096.0
+      encoderRatio: 2048.0
       rpmMax: 90.0
       invertEnc: 1
       drive0: #front right
         channel: 0
-        kinematics: [-20.0, -20.0, -6.1]
+        kinematics: [20.0, 20.0, 6.1]
       drive1: #rear right
         channel: 1
-        kinematics: [-20.0, 20.0, -6.1]
+        kinematics: [20.0, -20.0, 6.1]
 
     controller1:
       canID: 1
       gearRatio: 89.0
-      encoderRatio: 4096.0
+      encoderRatio: 2048.0
       rpmMax: 90.0
       invertEnc: 1
       drive0: #front left
         channel: 0
-        kinematics: [20.0, -20.0, -6.1]
+        kinematics: [-20.0, 20.0, 6.1]
       drive1: #rear left
         channel: 1
-        kinematics: [20.0, 20.0, -6.1]
+        kinematics: [-20.0, -20.0, 6.1]
