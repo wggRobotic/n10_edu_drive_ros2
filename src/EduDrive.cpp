@@ -121,11 +121,11 @@ namespace edu
         // Get system voltage from Power Management Board or Carrier Board
         float voltage = (_using_pwr_mgmt ? _pwr_mgmt->getVoltage() :  _carrier->getVoltageDrive());
                 
-        if(voltage < 3.0)
+        /*if(voltage < 3.0)
         {
             RCLCPP_WARN_STREAM(this->get_logger(), "Unable to enable motor controllers. Low voltage on motor power supply rail");
             return;
-        }
+        }*/
 
         if(_using_pwr_mgmt){
             // Let power management board set hardware enable
