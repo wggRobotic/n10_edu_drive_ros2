@@ -71,11 +71,20 @@ sudo apt update
 sudo apt upgrade
 sudo apt install can-utils build-essential git
 ```
-3. Add the following entries in /etc/rc.local. On newer Ubuntu systems /etc/rc.local may not be loaded by default. See [this description](https://www.linuxbabe.com/linux-server/how-to-enable-etcrc-local-with-systemd) on how to enable it.
+2. Add udev rules for CAN interfaces
+The extension board for the Raspberry Pi provides three CANFD interfaces. To ensure that the naming of the interfaces is the same after each boot process, a udev rule must be created in the /etc/udev/rules.d directory. Create the file /etc/udev/rules.d/42-mcp251xfd.rules with the following content:
+```console
+KERNELS=="spi0.0", SUBSYSTEMS=="spi", DRIVERS=="mcp251xfd", ACTION=="add", NAME="CAN0"
+KERNELS=="spi0.1", SUBSYSTEMS=="spi", DRIVERS=="mcp251xfd", ACTION=="add", NAME="CAN1"
+KERNELS=="spi1.0", SUBSYSTEMS=="spi", DRIVERS=="mcp251xfd", ACTION=="add", NAME="CAN2"
+```
+In this way, the CAN interface for the motor controller is always named CAN2. The CAN0 and CAN1 interfaces can be accessed via the sockets on the expansion board (see labeling on the board) and are intended for connecting the flexible sensor ring from EduArt.
+
+4. Add the following entries in /etc/rc.local. On newer Ubuntu systems /etc/rc.local may not be loaded by default. See [this description](https://www.linuxbabe.com/linux-server/how-to-enable-etcrc-local-with-systemd) on how to enable it.
 ```console
 ip link set CAN2 up type can bitrate 500000
 ```
-4. Install ROS. Read the [official documentation](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) for more detail
+5. Install ROS. Read the [official documentation](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) for more detail
 ```console
 sudo apt update && sudo apt install locales
 sudo locale-gen en_US en_US.UTF-8
@@ -91,7 +100,7 @@ sudo apt install python3-colcon-common-extensions
 sudo apt install ros-dev-tools
 sudo reboot
 ```
-5. Get and build the edu_drive_ros2 software
+6. Get and build the edu_drive_ros2 software
 ```console
 mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
