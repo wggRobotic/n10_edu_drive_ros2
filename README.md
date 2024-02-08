@@ -71,7 +71,7 @@ sudo apt update
 sudo apt upgrade
 sudo apt install can-utils build-essential git
 ```
-2. Add udev rules for CAN interfaces
+3. Add udev rules for CAN interfaces
 The extension board for the Raspberry Pi provides three CANFD interfaces. To ensure that the naming of the interfaces is the same after each boot process, a udev rule must be created in the /etc/udev/rules.d directory. Create the file /etc/udev/rules.d/42-mcp251xfd.rules with the following content:
 ```console
 KERNELS=="spi0.0", SUBSYSTEMS=="spi", DRIVERS=="mcp251xfd", ACTION=="add", NAME="CAN0"
