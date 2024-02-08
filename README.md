@@ -100,7 +100,29 @@ sudo apt install python3-colcon-common-extensions
 sudo apt install ros-dev-tools
 sudo reboot
 ```
-6. Get and build the edu_drive_ros2 software
+6. Optional: Static IP address
+By default, the configuration of the Ubuntu 22.04. server edition is set to DHCP. If you would like to set a static IP address, you can do this by making the following adjustment:
+```console
+sudo echo "network: {config: disabled}" > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+```
+This switches off the automatism with which the network configuration file is generated. The network configuration file /etc/netplan/50-cloud-init.yaml must now be adapted:
+```console
+network:
+    renderer: networkd
+    ethernets:
+        eth0:
+          addresses:
+            - 192.168.178.111/24
+          nameservers:
+            addresses: [4.2.2.2, 8.8.8.8]
+          routes:
+            - to: default
+              via: 192.168.178.1
+    version: 2
+```
+Replace the IP addresses above with your desired configuration. Then reboot your system.
+
+7. Get and build the edu_drive_ros2 software
 ```console
 mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
