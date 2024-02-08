@@ -14,7 +14,7 @@ ros2 launch edu_drive_ros2 edu_drive.launch.py
 When everthing is initialized well, one should see the following output:
 ```console
 # Listener start
-CAN Interface: can0
+CAN Interface: CAN2
 [ INFO] [1651663592.994224328]: Instanciated robot with vMax: 0.366519 m/s and omegaMax: 0.733038 rad/s
 ...
 ```
@@ -28,7 +28,7 @@ Please notice also, that the ROS variable ROS_DOMAIN_ID should be set properly.
 | ------ |:--|
 | usingPowerManagementBoard | Define if a Power Management Board is used, default is "true"
 | verbosity      | Display status messages for debugging, default is "false"
-| canInterface   | SocketCAN interface, e.g. can0       |
+| canInterface   | SocketCAN interface, e.g. CAN2       |
 | frequencyScale | Divider of PWM frequency, Base frequency: 500kHz (Divider=1)     |
 | inputWeight    | Low pass filtering, setpoint = inputWeight*setpoint_new + (1-inputWeight)*setpoint_old  |
 | maxPulseWidth  | Limitation of pulse width, meaningful values [0; 100]      |
@@ -73,7 +73,7 @@ sudo apt install can-utils build-essential git
 ```
 3. Add the following entries in /etc/rc.local. On newer Ubuntu systems /etc/rc.local may not be loaded by default. See [this description](https://www.linuxbabe.com/linux-server/how-to-enable-etcrc-local-with-systemd) on how to enable it.
 ```console
-ip link set can0 up type can bitrate 500000
+ip link set CAN2 up type can bitrate 500000
 ```
 4. Install ROS. Read the [official documentation](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) for more detail
 ```console
