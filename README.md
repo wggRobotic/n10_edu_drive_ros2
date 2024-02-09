@@ -162,7 +162,7 @@ Integrated voltage monitoring of the power management module protects your robot
 * If the voltage remains below 17.5 V for longer than 120 seconds, the system switches off automatically. This protects your battery from deep discharge.
 * If the voltage is above 24 V, the drives are deactivated immediately. This prevents you from driving off with a connected power supply unit.
 
-The following diagram shows an example of the logic functions
+The following diagram shows an example of the logic functions.
 
 <p align="center">
   <img src="/images/simulateEnableLogic/simulateEnableLogic.png" width="800"/>
