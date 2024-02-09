@@ -156,3 +156,16 @@ Below you can see the electrical interfaces of the Free Kinematics Kit. There ar
 <p align="center">
   <img src="/images/Free_Kinematics_Kit_Electrical_Interface_Desc_1920.jpg" width="800"/>
 </p>
+
+Integrated voltage monitoring of the power management module protects your robot in the event of incorrect operation:
+* If the voltage is too low (< 17.5 V), the drives are deactivated after 10 seconds.
+* If the voltage remains below 17.5 V for longer than 120 seconds, the system switches off automatically. This protects your battery from deep discharge.
+* If the voltage is above 24 V, the drives are deactivated immediately. This prevents you from driving off with a connected power supply unit.
+
+The following diagram shows an example of the logic functions
+
+<p align="center">
+  <img src="/images/simulateEnableLogic/simulateEnableLogic.png" width="800"/>
+</p>
+
+> **Warning:_**: Despite these protective functions, you must always ensure that the device is used as intended. Never charge the device unattended. Also make sure that no persons are in the immediate vicinity when operating your robot and that the robot cannot fall from a height difference.
