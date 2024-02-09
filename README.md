@@ -72,6 +72,7 @@ sudo apt upgrade
 sudo apt install can-utils build-essential git
 ```
 3. Add udev rules for CAN interfaces
+   
 The extension board for the Raspberry Pi provides three CANFD interfaces. To ensure that the naming of the interfaces is the same after each boot process, a udev rule must be created in the /etc/udev/rules.d directory. Create the file /etc/udev/rules.d/42-mcp251xfd.rules with the following content:
 ```console
 KERNELS=="spi0.0", SUBSYSTEMS=="spi", DRIVERS=="mcp251xfd", ACTION=="add", NAME="CAN0"
@@ -80,11 +81,19 @@ KERNELS=="spi1.0", SUBSYSTEMS=="spi", DRIVERS=="mcp251xfd", ACTION=="add", NAME=
 ```
 In this way, the CAN interface for the motor controller is always named CAN2. The CAN0 and CAN1 interfaces can be accessed via the sockets on the expansion board (see labeling on the board) and are intended for connecting the flexible sensor ring from EduArt.
 
-4. Add the following entries in /etc/rc.local. On newer Ubuntu systems /etc/rc.local may not be loaded by default. See [this description](https://www.linuxbabe.com/linux-server/how-to-enable-etcrc-local-with-systemd) on how to enable it.
+4. Configure the CAN interfaces
+   
+Add the configuration of all three can interfaces to the /boot/firmware/config.txt file. This can be done with the following command:
+```console
+echo -e '\ndtoverlay=spi1-2cs\ndtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25\ndtoverlay=mcp251xfd,spi0-1,oscillator=40000000,interrupt=13\ndtoverlay=mcp251xfd,spi1-0,oscillator=40000000,interrupt=24' >> /boot/firmware/config.txt
+```
+
+5. Add the following entries in /etc/rc.local. On newer Ubuntu systems /etc/rc.local may not be loaded by default. See [this description](https://www.linuxbabe.com/linux-server/how-to-enable-etcrc-local-with-systemd) on how to enable it.
 ```console
 ip link set CAN2 up type can bitrate 500000
 ```
-5. Install ROS. Read the [official documentation](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) for more detail
+
+6. Install ROS. Read the [official documentation](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) for more detail
 ```console
 sudo apt update && sudo apt install locales
 sudo locale-gen en_US en_US.UTF-8
@@ -100,7 +109,8 @@ sudo apt install python3-colcon-common-extensions
 sudo apt install ros-dev-tools
 sudo reboot
 ```
-6. Optional: Static IP address
+
+7. Optional: Static IP address
 By default, the configuration of the Ubuntu 22.04. server edition is set to DHCP. If you would like to set a static IP address, you can do this by making the following adjustment:
 ```console
 sudo echo "network: {config: disabled}" > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
@@ -122,7 +132,7 @@ network:
 ```
 Replace the IP addresses above with your desired configuration. Then reboot your system.
 
-7. Get and build the edu_drive_ros2 software
+8. Get and build the edu_drive_ros2 software
 ```console
 mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
