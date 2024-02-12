@@ -63,8 +63,8 @@ Depending on the polarity of the motor wiring, the kinematic parameters may have
 ### Example for a Mecanum drive
 <img src="https://latex.codecogs.com/svg.image?\mathbf{T}&space;=&space;\frac{1}{r}\begin{pmatrix}&space;&space;1&space;&&space;-1&space;&&space;-\frac{l_x&plus;l_y}{2}\\&space;-1&space;&&space;-1&space;&&space;-\frac{l_x&plus;l_y}{2}\\&space;&space;1&space;&&space;&space;1&space;&&space;-\frac{l_x&plus;l_y}{2}\\&space;-1&space;&&space;&space;1&space;&&space;-\frac{l_x&plus;l_y}{2}\end{pmatrix}" title="https://latex.codecogs.com/svg.image?\mathbf{T} = \frac{1}{r}\begin{pmatrix} 1 & -1 & -\frac{l_x+l_y}{2}\\ -1 & -1 & -\frac{l_x+l_y}{2}\\ 1 & 1 & -\frac{l_x+l_y}{2}\\ -1 & 1 & -\frac{l_x+l_y}{2}\end{pmatrix}" />
 
-# Setting up a Raspberry PI4 from scratch
-1. Install Raspberry Pi OS or Ubuntu, Ubuntu 22.04.3 server (jammy jellyfish) has been tested
+# Setting up a Raspberry PI4/5 from scratch
+1. Install Raspberry Pi OS or Ubuntu, Ubuntu 22.04.3 server (jammy jellyfish) has been tested on Rasperry Pi4. There is currently (February 12, 2024) no supported Ubuntu LTS version for the Raspberry Pi 5. With an installation of Ubuntu 23.10.1 server edition, it is still possible to compile ROS2 from the sources. You can find a few instructions for this below.
 2. Update and install packages
 ```console
 sudo apt update
@@ -78,6 +78,7 @@ Add the configuration of all three can interfaces to the /boot/firmware/config.t
 ```console
 echo -e '\ndtoverlay=spi1-2cs\ndtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25\ndtoverlay=mcp251xfd,spi0-1,oscillator=40000000,interrupt=13\ndtoverlay=mcp251xfd,spi1-0,oscillator=40000000,interrupt=24' >> /boot/firmware/config.txt
 ```
+> **Note:** For Ubuntu 23.10. the file /boot/firmware/network-config had to be renamed manually (/boot/firmware/network-config.bak) on a Raspberry Pi 5. As long as this file exists, /boot/firmware/config.txt is not read.
 
 4. Add udev rules and services for CAN interfaces
    
@@ -118,10 +119,25 @@ sudo add-apt-repository universe
 sudo apt update && sudo apt install curl -y
 sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+```
+
+**Only for Raspberry Pi 4 on Ubuntu 22.04.3 LTS**: The following commands are only possible for an installation on LTS versions:
+```console
 sudo apt install ros-humble-ros-base
 sudo apt install python3-colcon-common-extensions
 sudo apt install ros-dev-tools
 sudo reboot
+```
+
+**Only for Raspberry Pi 5 on Ubuntu 23.10.1**: Unfortunately, there were no complete packages for Ubuntu 23.10 when this documentation was created, so the installer has to be fooled into using an Ubuntu Jammy version:
+```console
+sudo apt install -y python3-flake8-docstrings python3-pip python3-pytest-cov python3-rosinstall-generator colcon
+mkdir -p ~/ros2_iron/src
+cd ~/ros2_iron
+rosinstall_generator ros_base --format repos --rosdistro iron --deps > base.repos
+vcs import --input base.repos src
+rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-6.0.1 urdfdom_headers python3-catkin-pkg-modules python3-rosdistro-modules" --os=ubuntu:jammy
+colcon build --symlink-install
 ```
 
 6. Optional: Static IP address
