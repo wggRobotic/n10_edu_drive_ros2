@@ -169,10 +169,12 @@ The Free Kinematics Kit from EduArt gives you all the freedom you need to build 
 </p>
 
 It consists of the following components, which can all be plugged together:
-- *Adapter Board* either directly pluggable onto a Raspberry Pi 4/5 or as a standalone EduArt Ethernet controller board, with which you can connect any computer with an Ethernet interface. This gives you the freedom to build the computing power into your robot that you need for your desired application.
-- *Motorcontrollers* can be plugged in directly. This allows you to control the speed of 2 to 8 motors.
-- The *Power Management Module* takes over the charge control of a 19.2V NiMH battery pack and also offers an on/off logic.
-- The *Auxiliary Power Supply Module* provides additional voltage levels with which you can supply additional devices.
+- *Adapter Board* either directly pluggable onto a Raspberry Pi 4/5 or as a standalone EduArt Ethernet controller board, with which you can connect any computer with an Ethernet interface. This gives you the freedom to build the computing power into your robot that you need for your desired application. This board is supplied via the socket strips, i.e. a circuit board with the appropriate sockets for a power supply unit or a battery should be used. The possible input voltage V<sub>in</sub> is 12V to 55V. Depending on how many motors are connected, the power supply must be able to supply higher currents. High-current batteries are recommended for operating a robot (min. 8A).
+- *Motorcontrollers* can be plugged in directly. This allows you to control the speed of 1 to 8 motors. The motor controllers are available in two versions, single-channel or dual-channel. Up to four motor controllers can be used, i.e. it is possible to use 1 to 4 larger motors (I<sub>RMS</sub> up to 5A) or 1 to 8 smaller motors (I<sub>RMS</sub> up to 2.5A). The dielectric strength of the single-channel motor controllers is 55V. The dielectric strength of the dual-channel motor controllers is 35V.
+- The *Power Management Module* takes over the charge control of a 19.2V NiMH battery pack and also offers an on/off logic. Temperature monitoring of the battery uses an integrated 6.8kOhm NTC. Never connect a battery other than the one supplied by EduArt.
+- The *Auxiliary Power Supply Module* provides additional voltage levels with which you can supply additional devices. The permissible operating voltage is between 15V and 36V.
+
+> **Warning:** The Raspberry single-board computer is supplied directly via the socket connectors. Never connect an external power supply for the Raspberry via USB-C.
 
 ### Electrical Interface
 Below you can see the electrical interfaces of the Free Kinematics Kit. There are off-the-shelf cables for the white Molex socket. Depending on the desired cable length, you can obtain the following part numbers from the usual distributors: 151360800 (50 mm), 151360801 (100 mm), 151360802 (150 mm), 151360803 (300 mm), 151360805 (450 mm) or 151360806 (600 mm).
@@ -192,4 +194,4 @@ The following diagram shows an example of the logic functions.
   <img src="/images/simulateEnableLogic/simulateEnableLogic.png" width="800"/>
 </p>
 
-> **Warning:_**: Despite these protective functions, you must always ensure that the device is used as intended. Never charge the device unattended. Also make sure that no persons are in the immediate vicinity when operating your robot and that the robot cannot fall from a height difference.
+> **Warning:** Despite these protective functions, you must always ensure that the device is used as intended. Never charge the device unattended. Also make sure that no persons are in the immediate vicinity when operating your robot and that the robot cannot fall from a height difference.
