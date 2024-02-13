@@ -78,7 +78,6 @@ void RPiAdapterBoard::notify(struct can_frame* frame)
     _temperature    = ((float)data[0]) / 100.f;
     uint16_t* udata = (uint16_t*)(&(frame->data[2]));
     _voltageSys     = ((float)udata[0]) / 100.f;
-    _voltageSys   = ((float)udata[1]) / 100.f;
     
     if(_verbosity)
       std::cout << "T=" << _temperature << "°C Vsys=" << _voltageSys << std::endl;
