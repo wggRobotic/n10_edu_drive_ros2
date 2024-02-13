@@ -119,4 +119,6 @@ int main(int argc, char *argv[])
 
    edu_drive_node->initDrive(controllerParams, can, usingPwrMgmt, verbosity);
    edu_drive_node->run();
+
+   can.stopListener();
 }

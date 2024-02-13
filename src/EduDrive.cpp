@@ -20,16 +20,21 @@ namespace edu
 
     EduDrive::~EduDrive()
     {
+        _can->clearObservers();
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
         {
             (*it)->disable();
             delete *it;
         }
+        delete _pwr_mgmt;
         delete _adapter;
+
     }
 
     void EduDrive::initDrive(std::vector<ControllerParams> cp, SocketCAN &can, bool using_pwr_mgmt, bool verbosity)
     {
+        _can = &can;
+
         _using_pwr_mgmt = using_pwr_mgmt;
         _verbosity = verbosity;
         _enabled = false;

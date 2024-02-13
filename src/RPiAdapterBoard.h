@@ -41,7 +41,7 @@ public:
   float getTemperature();
 
   /**
-   * @brief Get voltage of supply
+   * @brief Get system voltage (provided by supply pins)
    * @return voltage [V]
    */
   float getVoltageSys();

@@ -109,6 +109,9 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubCurrentPwrMgmt;
 
     rclcpp::Time                   _lastCmd;       // Time elapsed since last call
+
+    SocketCAN*                     _can;           // Pointer to CAN instance
+
     std::vector<MotorController*>  _mc;            // Vector containing pointer to all motor controller instances
     RPiAdapterBoard*               _adapter;       // Adapter board
     PowerManagementBoard*          _pwr_mgmt;      // Power management board

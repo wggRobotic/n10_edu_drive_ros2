@@ -34,6 +34,13 @@ bool SocketCAN::registerObserver(SocketCANObserver* observer)
   return true;
 }
 
+void SocketCAN::clearObservers()
+{
+  _mutex.lock();
+  _observers.clear();
+  _mutex.unlock();
+}
+
 bool SocketCAN::openPort(const char *port)
 {
   struct ifreq ifr;

@@ -41,6 +41,11 @@ public:
   bool registerObserver(SocketCANObserver* observer);
 
   /**
+   * Remove all registered observers
+   */
+  void clearObservers();
+
+  /**
    * Open CAN interface.
    * @param[in] port CAN interface name specified with slcand.
    * @return success==true
