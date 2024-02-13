@@ -1,4 +1,4 @@
-#include "CarrierBoard.h"
+#include "RPiAdapterBoard.h"
 #include <iostream>
 #include "can/canprotocol.h"
 #include <unistd.h>
@@ -6,7 +6,7 @@
 namespace edu
 {
 
-CarrierBoard::CarrierBoard(SocketCAN* can, bool verbosity)
+RPiAdapterBoard::RPiAdapterBoard(SocketCAN* can, bool verbosity)
 {
   _init = false;
   _verbosity = verbosity;
@@ -36,12 +36,12 @@ CarrierBoard::CarrierBoard(SocketCAN* can, bool verbosity)
   }
 }
 
-CarrierBoard::~CarrierBoard()
+RPiAdapterBoard::~RPiAdapterBoard()
 {
 
 }
 
-void CarrierBoard::getOrientation(double q[4])
+void RPiAdapterBoard::getOrientation(double q[4])
 {
   q[0] = _q[0];
   q[1] = _q[1];
@@ -49,17 +49,17 @@ void CarrierBoard::getOrientation(double q[4])
   q[3] = _q[3];
 }
 
-float CarrierBoard::getTemperature()
+float RPiAdapterBoard::getTemperature()
 {
   return _temperature;
 }
 
-float CarrierBoard::getVoltageSys()
+float RPiAdapterBoard::getVoltageSys()
 {
   return _voltageSys;
 }
 
-void CarrierBoard::notify(struct can_frame* frame)
+void RPiAdapterBoard::notify(struct can_frame* frame)
 {
   if(frame->can_dlc==8)
   {

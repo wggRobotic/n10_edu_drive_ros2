@@ -25,7 +25,7 @@ namespace edu
             (*it)->disable();
             delete *it;
         }
-        delete _carrier;
+        delete _adapter;
     }
 
     void EduDrive::initDrive(std::vector<ControllerParams> cp, SocketCAN &can, bool using_pwr_mgmt, bool verbosity)
@@ -52,7 +52,7 @@ namespace edu
         _pubVoltagePwrMgmt = this->create_publisher<std_msgs::msg::Float32>("voltagePwrMgmt", 1);
         _pubCurrentPwrMgmt = this->create_publisher<std_msgs::msg::Float32>("currentPwrMgmt", 1);
 
-        _carrier = new CarrierBoard(&can, verbosity);
+        _adapter = new RPiAdapterBoard(&can, verbosity);
         _pwr_mgmt = new PowerManagementBoard(&can, verbosity);
         
         _vMax = 0.f;
@@ -104,7 +104,7 @@ namespace edu
     {
         _lastCmd = this->get_clock()->now();
 
-        rclcpp::TimerBase::SharedPtr timerReceiveCAN = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&EduDrive::receiveCAN, this));
+        rclcpp::TimerBase::SharedPtr timerReceiveCAN = this->create_wall_timer(std::chrono::milliseconds(20), std::bind(&EduDrive::receiveCAN, this));
         rclcpp::TimerBase::SharedPtr timerCheckLaggyConnection = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&EduDrive::checkLaggyConnection, this));
 
         rclcpp::spin(shared_from_this());
@@ -229,7 +229,7 @@ namespace edu
 
     void EduDrive::receiveCAN()
     {
-        float voltageAdapter = _carrier->getVoltageSys();
+        float voltageAdapter = _adapter->getVoltageSys();
         float voltagePwrMgmt = _pwr_mgmt->getVoltage();
         
         std_msgs::msg::Float32MultiArray msgRPM;
@@ -288,15 +288,15 @@ namespace edu
         _pubEnabled->publish(msgEnabled);
 
         std_msgs::msg::Float32 msgTemperature;
-        msgTemperature.data = _carrier->getTemperature();
+        msgTemperature.data = _adapter->getTemperature();
         _pubTemp->publish(msgTemperature);
 
         std_msgs::msg::Float32 msgVoltageAdapter;
-        msgVoltageAdapter.data = _carrier->getVoltageSys();
+        msgVoltageAdapter.data = _adapter->getVoltageSys();
         _pubVoltageAdapter->publish(msgVoltageAdapter);
 
         double q[4];
-        _carrier->getOrientation(q);
+        _adapter->getOrientation(q);
         geometry_msgs::msg::PoseStamped msgOrientation;
         //Sequence number not supported in std_msgs::msg::header in ros2
         //static unsigned int seq = 0;

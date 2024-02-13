@@ -11,7 +11,7 @@
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 #include "MotorController.h"
-#include "CarrierBoard.h"
+#include "RPiAdapterBoard.h"
 #include "PowerManagementBoard.h"
 
 namespace edu
@@ -111,7 +111,7 @@ private:
 
     rclcpp::Time                   _lastCmd;       // Time elapsed since last call
     std::vector<MotorController*>  _mc;            // Vector containing pointer to all motor controller instances
-    CarrierBoard*                  _carrier;       // Adapter board
+    RPiAdapterBoard*               _adapter;       // Adapter board
     PowerManagementBoard*          _pwr_mgmt;      // Power management board
 
     double _vMax;

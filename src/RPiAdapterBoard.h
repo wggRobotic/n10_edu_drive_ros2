@@ -1,5 +1,5 @@
-#ifndef _CARRIERBOARD_H_
-#define _CARRIERBOARD_H_
+#ifndef _RPIADAPTERBOARD_H_
+#define _RPIADAPTERBOARD_H_
 
 #include "can/SocketCAN.h"
 
@@ -7,12 +7,12 @@ namespace edu
 {
 
 /**
- * @class CarrierBoard
- * @brief Interface to EduArt's robot carrier board.
+ * @class RPiAdapterBoard
+ * @brief Interface to EduArt's robot RPi adapter board.
  * @author Stefan May
  * @date 27.04.2022
  */
-class CarrierBoard : public SocketCANObserver
+class RPiAdapterBoard : public SocketCANObserver
 {
 public:
   /**
@@ -21,12 +21,12 @@ public:
    * @param[in] params motor parameters
    * @param[in] verbosity verbosity output flag
    */
-  CarrierBoard(SocketCAN* can, bool verbosity=false);
+  RPiAdapterBoard(SocketCAN* can, bool verbosity=false);
 
   /**
    * Destructor
    */
-  ~CarrierBoard();
+  ~RPiAdapterBoard();
   
   /**
    * @brief Get orientation as quaternion
@@ -73,4 +73,4 @@ private:
 
 } // namespace
 
-#endif // _CARRIERBOARD_H_
+#endif // _RPIADAPTERBOARD_H_
