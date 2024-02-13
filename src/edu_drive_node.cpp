@@ -20,18 +20,18 @@ int main(int argc, char *argv[])
    int timeout;
    
    edu_drive->declare_parameter("usingPowerManagementBoard", true);
-   edu_drive->declare_parameter("canInterface", std::string("can0"));
-   edu_drive->declare_parameter("frequencyScale", 32);
-   edu_drive->declare_parameter("inputWeight", 0.8f);
-   edu_drive->declare_parameter("maxPulseWidth", 50);
-   edu_drive->declare_parameter("timeout", 300);
+   edu_drive->declare_parameter("canInterface",              std::string("can0"));
+   edu_drive->declare_parameter("frequencyScale",            32);
+   edu_drive->declare_parameter("inputWeight",               0.8f);
+   edu_drive->declare_parameter("maxPulseWidth",             50);
+   edu_drive->declare_parameter("timeout",                   300);
 
-   usingPwrMgmt = edu_drive->get_parameter("usingPowerManagementBoard").as_bool();
-   canInterface = edu_drive->get_parameter("canInterface").as_string();
+   usingPwrMgmt   = edu_drive->get_parameter("usingPowerManagementBoard").as_bool();
+   canInterface   = edu_drive->get_parameter("canInterface").as_string();
    frequencyScale = edu_drive->get_parameter("frequencyScale").as_int();
-   inputWeight = edu_drive->get_parameter("inputWeight").as_double();
-   maxPulseWidth = edu_drive->get_parameter("maxPulseWidth").as_int();
-   timeout = edu_drive->get_parameter("timeout").as_int();
+   inputWeight    = edu_drive->get_parameter("inputWeight").as_double();
+   maxPulseWidth  = edu_drive->get_parameter("maxPulseWidth").as_int();
+   timeout        = edu_drive->get_parameter("timeout").as_int();
 
    // Ensure a proper range for the timeout value
    // A lag more than a second should not be tolerated
@@ -110,7 +110,6 @@ int main(int argc, char *argv[])
    edu::SocketCAN can(canInterface);
    can.startListener();
    
-   //std::cout << "CAN Interface: " << canInterface << std::endl;
    RCLCPP_INFO_STREAM(edu_drive->get_logger(), "CAN Interface: " << canInterface);
 
    bool verbosity;
