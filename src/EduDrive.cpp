@@ -45,7 +45,6 @@ namespace edu
         // Publisher of carrier shield
         _pubTemp             = this->create_publisher<std_msgs::msg::Float32>("temperature", 1);
         _pubVoltageAdapter   = this->create_publisher<std_msgs::msg::Float32>("voltageAdapter", 1);
-        _pubIMU              = this->create_publisher<sensor_msgs::msg::Imu>("imu", 1);
         _pubOrientation      = this->create_publisher<geometry_msgs::msg::PoseStamped>("pose", 1);
 		
         //Publisher of power management shield

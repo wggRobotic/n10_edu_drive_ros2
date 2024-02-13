@@ -102,7 +102,6 @@ private:
     // Data available from adapter board
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubTemp;
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltageAdapter;
-    rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr              _pubIMU;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr    _pubOrientation;
 
     // Data available from power management board
