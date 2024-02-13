@@ -211,3 +211,10 @@ The following diagram shows an example of the logic functions.
 </p>
 
 > **Warning:** Despite these protective functions, you must always ensure that the device is used as intended. Never charge the device unattended. Also make sure that no persons are in the immediate vicinity when operating your robot and that the robot cannot fall from a height difference.
+
+### Software Interface
+The software is structured in three layers. An independent layer enables communication via a CAN bus. Specific commands are defined via the classes of the robot interface layer. The ROS interface is encapsulated in a single class. For most users, it is sufficient to use the EduDrive class, as the included node edu_drive_node.cpp does.
+
+<p align="center">
+  <img src="/doc/edu_drive_classdiagram.png" width="800"/>
+</p>
