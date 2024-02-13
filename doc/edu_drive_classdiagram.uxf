@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.3">
+  <zoom_level>17</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>714</x>
+      <y>136</y>
+      <w>1496</w>
+      <h>340</h>
+    </coordinates>
+    <panel_attributes>EduDrive
+--
++ EduDrive()
++ ~EduDrive()
++ initDrive((std::vector&lt;ControllerParams&gt; cp, SocketCAN&amp; can, bool using_pwr_mgmt=true, bool verbosity=false) : void
++ run() : void
++ enable() : void
++ disable() : void
++ joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy) : void : void
++ velocityCallback(const geometry_msgs::msg::Twist::SharedPtr cmd) : void
++ receiveCAN() : void
++ checkLaggyConnection() : void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>969</x>
+      <y>952</y>
+      <w>663</w>
+      <h>697</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Observer&gt;&gt;
+MotorController
+--
++ enable() : void
++ disable() : void
++ setGearRatio(float gearRatio) : bool
++ getGearRatio : float
++ setEncoderTicksPerRev(float encoderTicksPerRev) : bool
++ getEncoderTicksPerRev() : float
++ bool setFrequencyScale(unsigned short scale)
++ getFrequencyScale() : unsigned short
++ setPWM(int pwm[2]) : bool
++ setRPM(float rpm[2]) : bool
++ getWheelResponse(float response[2]) : void
++ setKp(float kp) : bool
++ getKp() : float
++ setKi(float ki) : bool
++ getKi() : float
++ setKd(float kd) : bool
++ getKd() : float
++ setAntiWindup(bool activate) : bool
++ getAntiWindup() : bool
++ setInputWeight(float weight) : bool
++ getInputWeight() : float
++ stop() : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>170</x>
+      <y>510</y>
+      <w>884</w>
+      <h>204</h>
+    </coordinates>
+    <panel_attributes>SocketCANObserver
+bg=#AAAAFF
+--
++ setCANId(canid_t id) : void
++ getCANId() : canid_t
++ checkConnectionStatus(unsigned int timeoutInMillis=100) : bool
++ forwardNotification(struct can_frame* frame) : void
++ notify(struct can_frame* frame) = 0 : void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1666</x>
+      <y>952</y>
+      <w>629</w>
+      <h>272</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Observer&gt;&gt;
+PowerManagementBoard
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>306</x>
+      <y>952</y>
+      <w>612</w>
+      <h>272</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Observer&gt;&gt;
+RPiAdapterBoard
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>578</x>
+      <y>697</y>
+      <w>51</w>
+      <h>289</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+fg=#AAAAFF</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>578</x>
+      <y>697</y>
+      <w>646</w>
+      <h>289</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+fg=#AAAAFF</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;360.0;90.0;360.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>578</x>
+      <y>697</y>
+      <w>1326</w>
+      <h>289</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+fg=#AAAAFF</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;760.0;90.0;760.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>697</x>
+      <y>459</y>
+      <w>646</w>
+      <h>527</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=1</panel_attributes>
+    <additional_attributes>360.0;10.0;360.0;190.0;10.0;190.0;10.0;290.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1292</x>
+      <y>459</y>
+      <w>85</w>
+      <h>527</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1..8</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;290.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1292</x>
+      <y>459</y>
+      <w>731</w>
+      <h>527</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=1</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;190.0;410.0;190.0;410.0;290.0</additional_attributes>
+  </element>
+</diagram>
