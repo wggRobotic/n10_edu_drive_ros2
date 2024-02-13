@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
       {
          std::string driveID = controllerID + std::string(".drive") + std::to_string(d);
          edu_drive->declare_parameter(driveID + std::string(".channel"), 0);
-         edu_drive_node->declare_parameter<std::vector<double>>(driveID + std::string(".kinematics"), std::vector<double>{0.0,0.0,0.0});
+         edu_drive->declare_parameter<std::vector<double>>(driveID + std::string(".kinematics"), std::vector<double>{0.0,0.0,0.0});
 
          cp.motorParams[d].channel = edu_drive->get_parameter(driveID + std::string(".channel")).as_int();
          cp.motorParams[d].kinematics = edu_drive->get_parameter(driveID + std::string(".kinematics")).as_double_array();
