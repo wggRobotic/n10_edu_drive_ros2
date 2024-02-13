@@ -20,10 +20,8 @@ namespace edu
 
     EduDrive::~EduDrive()
     {
-        _can->clearObservers();
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
         {
-            (*it)->disable();
             delete *it;
         }
         delete _pwr_mgmt;
@@ -112,6 +110,14 @@ namespace edu
         rclcpp::TimerBase::SharedPtr timerCheckLaggyConnection = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&EduDrive::checkLaggyConnection, this));
 
         rclcpp::spin(shared_from_this());
+
+        _can->clearObservers();
+        for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
+        {
+            (*it)->stop();
+            (*it)->disable();
+        }
+
         rclcpp::shutdown();
     }
 
@@ -121,10 +127,9 @@ namespace edu
 
         if(_using_pwr_mgmt){
             // Let power management board set hardware enable
+            // if the power management board is not used, the user needs to take care about this pin.
+            // The adapter board is designed to treat this pin as a input pin
             _pwr_mgmt->enable();
-        }else{
-            // Set hardware enable with RPI GPIO
-            gpio_write("/dev/gpiochip0", 16, 1);
         }
 
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
@@ -142,9 +147,6 @@ namespace edu
         if(_using_pwr_mgmt){
             // Let power management board reset hardware enable
             _pwr_mgmt->disable();
-        }else{
-            // Reset hardware enable with RPI GPIO
-            gpio_write("/dev/gpiochip0", 16, 0);
         }
 
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)

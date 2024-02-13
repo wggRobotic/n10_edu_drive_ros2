@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
    rclcpp::init(argc, argv);
-   auto edu_drive_node = std::make_shared<edu::EduDrive>();
+   auto edu_drive = std::make_shared<edu::EduDrive>();
 
    std::vector<edu::ControllerParams> controllerParams;
 
@@ -19,19 +19,19 @@ int main(int argc, char *argv[])
    int maxPulseWidth;
    int timeout;
    
-   edu_drive_node->declare_parameter("usingPowerManagementBoard", true);
-   edu_drive_node->declare_parameter("canInterface", std::string("can0"));
-   edu_drive_node->declare_parameter("frequencyScale", 32);
-   edu_drive_node->declare_parameter("inputWeight", 0.8f);
-   edu_drive_node->declare_parameter("maxPulseWidth", 50);
-   edu_drive_node->declare_parameter("timeout", 300);
+   edu_drive->declare_parameter("usingPowerManagementBoard", true);
+   edu_drive->declare_parameter("canInterface", std::string("can0"));
+   edu_drive->declare_parameter("frequencyScale", 32);
+   edu_drive->declare_parameter("inputWeight", 0.8f);
+   edu_drive->declare_parameter("maxPulseWidth", 50);
+   edu_drive->declare_parameter("timeout", 300);
 
-   usingPwrMgmt = edu_drive_node->get_parameter("usingPowerManagementBoard").as_bool();
-   canInterface = edu_drive_node->get_parameter("canInterface").as_string();
-   frequencyScale = edu_drive_node->get_parameter("frequencyScale").as_int();
-   inputWeight = edu_drive_node->get_parameter("inputWeight").as_double();
-   maxPulseWidth = edu_drive_node->get_parameter("maxPulseWidth").as_int();
-   timeout = edu_drive_node->get_parameter("timeout").as_int();
+   usingPwrMgmt = edu_drive->get_parameter("usingPowerManagementBoard").as_bool();
+   canInterface = edu_drive->get_parameter("canInterface").as_string();
+   frequencyScale = edu_drive->get_parameter("frequencyScale").as_int();
+   inputWeight = edu_drive->get_parameter("inputWeight").as_double();
+   maxPulseWidth = edu_drive->get_parameter("maxPulseWidth").as_int();
+   timeout = edu_drive->get_parameter("timeout").as_int();
 
    // Ensure a proper range for the timeout value
    // A lag more than a second should not be tolerated
@@ -44,24 +44,24 @@ int main(int argc, char *argv[])
    int antiWindup;
    int responseMode;
 
-   edu_drive_node->declare_parameter("kp", 0.0f);
-   edu_drive_node->declare_parameter("ki", 0.f);
-   edu_drive_node->declare_parameter("kd", 0.f);
-   edu_drive_node->declare_parameter("antiWindup", 1);
-   edu_drive_node->declare_parameter("responseMode", 0);
+   edu_drive->declare_parameter("kp", 0.0f);
+   edu_drive->declare_parameter("ki", 0.f);
+   edu_drive->declare_parameter("kd", 0.f);
+   edu_drive->declare_parameter("antiWindup", 1);
+   edu_drive->declare_parameter("responseMode", 0);
 
-   kp = edu_drive_node->get_parameter("kp").as_double();
-   ki = edu_drive_node->get_parameter("ki").as_double();
-   kd = edu_drive_node->get_parameter("kd").as_double();
-   antiWindup   = edu_drive_node->get_parameter("antiWindup").as_int();
-   responseMode = edu_drive_node->get_parameter("responseMode").as_int();
+   kp = edu_drive->get_parameter("kp").as_double();
+   ki = edu_drive->get_parameter("ki").as_double();
+   kd = edu_drive->get_parameter("kd").as_double();
+   antiWindup   = edu_drive->get_parameter("antiWindup").as_int();
+   responseMode = edu_drive->get_parameter("responseMode").as_int();
 
    // -----------------------------
 
    // --- Controller parameters ---
    int controllers = 0;
-   edu_drive_node->declare_parameter("controllers", 0);
-   controllers = edu_drive_node->get_parameter("controllers").as_int();
+   edu_drive->declare_parameter("controllers", 0);
+   controllers = edu_drive->get_parameter("controllers").as_int();
 
    for(int c=0; c<controllers; c++)
    {
@@ -77,17 +77,17 @@ int main(int argc, char *argv[])
       cp.antiWindup     = antiWindup;
       
       std::string controllerID = std::string("controller") + std::to_string(c);
-      edu_drive_node->declare_parameter(controllerID + std::string(".canID"), 0);
-      edu_drive_node->declare_parameter(controllerID + std::string(".gearRatio"), 0.f);
-      edu_drive_node->declare_parameter(controllerID + std::string(".encoderRatio"), 0.f);
-      edu_drive_node->declare_parameter(controllerID + std::string(".rpmMax"), 0.f);
-      edu_drive_node->declare_parameter(controllerID + std::string(".invertEnc"), 0);
+      edu_drive->declare_parameter(controllerID + std::string(".canID"), 0);
+      edu_drive->declare_parameter(controllerID + std::string(".gearRatio"), 0.f);
+      edu_drive->declare_parameter(controllerID + std::string(".encoderRatio"), 0.f);
+      edu_drive->declare_parameter(controllerID + std::string(".rpmMax"), 0.f);
+      edu_drive->declare_parameter(controllerID + std::string(".invertEnc"), 0);
 
-      cp.canID        = edu_drive_node->get_parameter(controllerID + std::string(".canID")).as_int();
-      cp.gearRatio    = edu_drive_node->get_parameter(controllerID + std::string(".gearRatio")).as_double();
-      cp.encoderRatio = edu_drive_node->get_parameter(controllerID + std::string(".encoderRatio")).as_double();
-      cp.rpmMax       = edu_drive_node->get_parameter(controllerID + std::string(".rpmMax")).as_double();
-      cp.invertEnc    = edu_drive_node->get_parameter(controllerID + std::string(".invertEnc")).as_int();
+      cp.canID        = edu_drive->get_parameter(controllerID + std::string(".canID")).as_int();
+      cp.gearRatio    = edu_drive->get_parameter(controllerID + std::string(".gearRatio")).as_double();
+      cp.encoderRatio = edu_drive->get_parameter(controllerID + std::string(".encoderRatio")).as_double();
+      cp.rpmMax       = edu_drive->get_parameter(controllerID + std::string(".rpmMax")).as_double();
+      cp.invertEnc    = edu_drive->get_parameter(controllerID + std::string(".invertEnc")).as_int();
 
       cp.responseMode   = (responseMode==0 ? edu::CAN_RESPONSE_RPM : edu::CAN_RESPONSE_POS);
 
@@ -95,11 +95,11 @@ int main(int argc, char *argv[])
       for(int d=0; d<2; d++)
       {
          std::string driveID = controllerID + std::string(".drive") + std::to_string(d);
-         edu_drive_node->declare_parameter(driveID + std::string(".channel"), 0);
+         edu_drive->declare_parameter(driveID + std::string(".channel"), 0);
          edu_drive_node->declare_parameter<std::vector<double>>(driveID + std::string(".kinematics"), std::vector<double>{0.0,0.0,0.0});
 
-         cp.motorParams[d].channel = edu_drive_node->get_parameter(driveID + std::string(".channel")).as_int();
-         cp.motorParams[d].kinematics = edu_drive_node->get_parameter(driveID + std::string(".kinematics")).as_double_array();
+         cp.motorParams[d].channel = edu_drive->get_parameter(driveID + std::string(".channel")).as_int();
+         cp.motorParams[d].kinematics = edu_drive->get_parameter(driveID + std::string(".kinematics")).as_double_array();
       }
       // ------------------------------
 
@@ -111,14 +111,14 @@ int main(int argc, char *argv[])
    can.startListener();
    
    //std::cout << "CAN Interface: " << canInterface << std::endl;
-   RCLCPP_INFO_STREAM(edu_drive_node->get_logger(), "CAN Interface: " << canInterface);
+   RCLCPP_INFO_STREAM(edu_drive->get_logger(), "CAN Interface: " << canInterface);
 
    bool verbosity;
-   edu_drive_node->declare_parameter("verbosity", false);
-   verbosity = edu_drive_node->get_parameter("verbosity").as_bool();
+   edu_drive->declare_parameter("verbosity", false);
+   verbosity = edu_drive->get_parameter("verbosity").as_bool();
 
-   edu_drive_node->initDrive(controllerParams, can, usingPwrMgmt, verbosity);
-   edu_drive_node->run();
+   edu_drive->initDrive(controllerParams, can, usingPwrMgmt, verbosity);
+   edu_drive->run();
 
    can.stopListener();
 }

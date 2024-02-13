@@ -62,7 +62,7 @@ MotorController::MotorController(SocketCAN* can, ControllerParams params, bool v
 
 MotorController::~MotorController()
 {
-  stop();
+
 }
 
 bool MotorController::isInitialized()
