@@ -67,7 +67,7 @@ void PowerManagementBoard::notify(struct can_frame* frame)
   if(frame->can_dlc==6)
   {
     //@ToDo: deserialize properly
-    char reversedBytes[4] = {frame->data[4], frame->data[3], frame->data[2], frame->data[1]};
+    unsigned char reversedBytes[4] = {frame->data[4], frame->data[3], frame->data[2], frame->data[1]};
     if(frame->data[0] == 1)
     {
         // deserialize 4 bytes to a float

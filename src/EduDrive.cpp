@@ -43,13 +43,10 @@ namespace edu
         _pubRPM     = this->create_publisher<std_msgs::msg::Float32MultiArray>("rpm", 1);
 
         // Publisher of carrier shield
-        _pubTemp         = this->create_publisher<std_msgs::msg::Float32>("temperature", 1);
-        _pubVoltageMCU   = this->create_publisher<std_msgs::msg::Float32>("voltageMCU", 1);
-        _pubCurrentMCU   = this->create_publisher<std_msgs::msg::Float32>("currentMCU", 1);
-        _pubVoltageDrive = this->create_publisher<std_msgs::msg::Float32>("voltageDrive", 1);
-        _pubCurrentDrive = this->create_publisher<std_msgs::msg::Float32>("currentDrive", 1);
-        _pubIMU          = this->create_publisher<sensor_msgs::msg::Imu>("imu", 1);
-        _pubOrientation  = this->create_publisher<geometry_msgs::msg::PoseStamped>("pose", 1);
+        _pubTemp             = this->create_publisher<std_msgs::msg::Float32>("temperature", 1);
+        _pubVoltageAdapter   = this->create_publisher<std_msgs::msg::Float32>("voltageAdapter", 1);
+        _pubIMU              = this->create_publisher<sensor_msgs::msg::Imu>("imu", 1);
+        _pubOrientation      = this->create_publisher<geometry_msgs::msg::PoseStamped>("pose", 1);
 		
         //Publisher of power management shield
         _pubVoltagePwrMgmt = this->create_publisher<std_msgs::msg::Float32>("voltagePwrMgmt", 1);
@@ -117,15 +114,6 @@ namespace edu
     void EduDrive::enable()
     {
         RCLCPP_INFO(this->get_logger(), "Enabling robot");
-
-        // Get system voltage from Power Management Board or Carrier Board
-        float voltage = (_using_pwr_mgmt ? _pwr_mgmt->getVoltage() :  _carrier->getVoltageDrive());
-                
-        /*if(voltage < 3.0)
-        {
-            RCLCPP_WARN_STREAM(this->get_logger(), "Unable to enable motor controllers. Low voltage on motor power supply rail");
-            return;
-        }*/
 
         if(_using_pwr_mgmt){
             // Let power management board set hardware enable
@@ -200,14 +188,17 @@ namespace edu
 
     bool EduDrive::enableCallback(const std::shared_ptr<rmw_request_id_t> header, const std::shared_ptr<std_srvs::srv::SetBool_Request> request, const std::shared_ptr<std_srvs::srv::SetBool_Response> response)
     {
+        // suppress warning about unused variable header
+        (void)header;
+
        if(request->data==true)
        {
-           RCLCPP_INFO(this->get_logger(), "Enabling robot");
+           RCLCPP_INFO(this->get_logger(), "%s", "Enabling robot");
            enable();
        }
        else
        {
-           RCLCPP_INFO(this->get_logger(), "Disabling robot");
+           RCLCPP_INFO(this->get_logger(),  "%s", "Disabling robot");
            disable();
        }
        response->success = true;
@@ -238,7 +229,7 @@ namespace edu
 
     void EduDrive::receiveCAN()
     {
-        float voltageDrive = _carrier->getVoltageDrive();
+        float voltageAdapter = _carrier->getVoltageSys();
         float voltagePwrMgmt = _pwr_mgmt->getVoltage();
         
         std_msgs::msg::Float32MultiArray msgRPM;
@@ -256,7 +247,7 @@ namespace edu
             bool enableState = false;
             if(controllersInitialized)
             {
-                if(voltageDrive > 3.0 || voltagePwrMgmt > 3.0) //@ToDo: find nicer solution
+                if(voltageAdapter > 3.0 || voltagePwrMgmt > 3.0) //@ToDo: find nicer solution
                 {                    
                     if((*it)->checkConnectionStatus(200))
                     {
@@ -300,29 +291,9 @@ namespace edu
         msgTemperature.data = _carrier->getTemperature();
         _pubTemp->publish(msgTemperature);
 
-        std_msgs::msg::Float32 msgVoltageMCU;
-        msgVoltageMCU.data = _carrier->getVoltageMCU();
-        _pubVoltageMCU->publish(msgVoltageMCU);
-
-        std_msgs::msg::Float32 msgCurrentMCU;
-        msgCurrentMCU.data = _carrier->getCurrentMCU();
-        _pubCurrentMCU->publish(msgCurrentMCU);
-
-        std_msgs::msg::Float32 msgVoltageDrive;
-        msgVoltageDrive.data = voltageDrive;
-        _pubVoltageDrive->publish(msgVoltageDrive);
-
-        std_msgs::msg::Float32 msgCurrentDrive;
-        msgCurrentDrive.data = _carrier->getCurrentDrive();
-        _pubCurrentDrive->publish(msgCurrentDrive);
-
-        std_msgs::msg::Float32 msgVoltagePwrMgmt;
-        msgVoltagePwrMgmt.data = voltagePwrMgmt;
-        _pubVoltagePwrMgmt->publish(msgVoltagePwrMgmt);
-
-        std_msgs::msg::Float32 msgCurrentPwrMgmt;
-        msgCurrentPwrMgmt.data = _pwr_mgmt->getCurrent();
-        _pubCurrentPwrMgmt->publish(msgCurrentPwrMgmt);
+        std_msgs::msg::Float32 msgVoltageAdapter;
+        msgVoltageAdapter.data = _carrier->getVoltageSys();
+        _pubVoltageAdapter->publish(msgVoltageAdapter);
 
         double q[4];
         _carrier->getOrientation(q);
@@ -340,6 +311,14 @@ namespace edu
         msgOrientation.pose.orientation.y = q[2];
         msgOrientation.pose.orientation.z = q[3];
         _pubOrientation->publish(msgOrientation);
+
+        std_msgs::msg::Float32 msgVoltagePwrMgmt;
+        msgVoltagePwrMgmt.data = voltagePwrMgmt;
+        _pubVoltagePwrMgmt->publish(msgVoltagePwrMgmt);
+
+        std_msgs::msg::Float32 msgCurrentPwrMgmt;
+        msgCurrentPwrMgmt.data = _pwr_mgmt->getCurrent();
+        _pubCurrentPwrMgmt->publish(msgCurrentPwrMgmt);
     }
 
     void EduDrive::checkLaggyConnection()

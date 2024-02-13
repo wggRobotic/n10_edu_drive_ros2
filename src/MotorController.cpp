@@ -9,10 +9,8 @@
 namespace edu
 {
 
-MotorController::MotorController(SocketCAN* can, ControllerParams params, bool verbosity)
+MotorController::MotorController(SocketCAN* can, ControllerParams params, bool verbosity) : _params(params), _verbosity(verbosity)
 {
-  _verbosity = verbosity;
-  _params    = params;
   _isInit    = false;
   
   if(true)
@@ -35,12 +33,12 @@ MotorController::MotorController(SocketCAN* can, ControllerParams params, bool v
     std::cout << "    rpmMax         = " << params.rpmMax << std::endl;
     std::cout << "    invertEnc      = " << params.invertEnc << std::endl;
 
-    for(int i=0; i<2; i++)
+    for(unsigned int i=0; i<2; i++)
     {
       std::cout << "   --- Drive" << i << std::endl;
       std::cout << "       channel: " << _params.motorParams[i].channel << std::endl;
       std::cout << "       kinematics: ";
-      for(int j=0; j<_params.motorParams[i].kinematics.size(); j++)
+      for(unsigned int j=0; j<_params.motorParams[i].kinematics.size(); j++)
         std::cout << _params.motorParams[i].kinematics[j] << " ";
       std::cout << std::endl;
     }

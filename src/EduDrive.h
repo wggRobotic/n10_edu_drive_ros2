@@ -33,44 +33,49 @@ public:
     EduDrive();
 
     /**
-     * @brief Destroy the Edu Drive object
+     * @brief Destructor
      *
      */
     ~EduDrive();
 
     /**
-     * @brief Initialize the Drive
-     *
+     * @brief Initialize drive
+     * @param[in] cp Parameters for the closed-loop controller of all motor channels
+     * @param[in] can Instance of CAN communication socket. All connected devices share the communication bus.
+     * @param[in] using_pwr_mgmt Flag indicating whether the power management module of EduArt is used. This enables additional measurement topics (voltage and current sensing).
+     * @param[in] verbosity Make the instance of this class more chatty. Debug information will be printed to stdout.
      */
     void initDrive(std::vector<ControllerParams> cp, SocketCAN& can, bool using_pwr_mgmt=true, bool verbosity=false);
 
     /**
      * @brief Blocking ROS handler method. Call this method to enter the ROS message loop.
-     *
      */
     void run();
 
     /**
      * @brief Enable all drives
-     * 
      */
     void enable();
 
     /**
      * @brief Disable all drives
-     * 
      */
     void disable();
 
     /**
      * @brief Method called by ROS as joystick data is available
-     * 
      * @param joy joystick data
      */
     void joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy);
 
+    /**
+     * @brief Method called by ROS as twist data is available
+     */
     void velocityCallback(const geometry_msgs::msg::Twist::SharedPtr cmd);
 
+    /**
+     * @brief 
+     */
     void receiveCAN();
     
     void checkLaggyConnection();
@@ -85,26 +90,29 @@ private:
 
     bool enableCallback(const std::shared_ptr<rmw_request_id_t> header, const std::shared_ptr<std_srvs::srv::SetBool_Request> request, const std::shared_ptr<std_srvs::srv::SetBool_Response> response);
 
-    //rclcpp::Node _node; //This class inherits from rclcpp::Node, no need for variable _node
+    // Input topics / services
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr           _subJoy;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr       _subVel;
     rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr               _srvEnable;
+
+    // Data available from motor controllers
     rclcpp::Publisher<std_msgs::msg::ByteMultiArray>::SharedPtr      _pubEnabled;
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr   _pubRPM;
+    
+    // Data available from adapter board
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubTemp;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltageMCU;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubCurrentMCU;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltageDrive;
-    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubCurrentDrive;
+    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltageAdapter;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr              _pubIMU;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr    _pubOrientation;
+
+    // Data available from power management board
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltagePwrMgmt;
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubCurrentPwrMgmt;
 
-    rclcpp::Time _lastCmd;       // Time elapsed since last call
-    std::vector<MotorController*>  _mc;
-    CarrierBoard* _carrier;
-    PowerManagementBoard* _pwr_mgmt;
+    rclcpp::Time                   _lastCmd;       // Time elapsed since last call
+    std::vector<MotorController*>  _mc;            // Vector containing pointer to all motor controller instances
+    CarrierBoard*                  _carrier;       // Adapter board
+    PowerManagementBoard*          _pwr_mgmt;      // Power management board
 
     double _vMax;
     double _omegaMax;

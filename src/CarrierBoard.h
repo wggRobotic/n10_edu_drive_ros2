@@ -41,28 +41,10 @@ public:
   float getTemperature();
 
   /**
-   * @brief Get voltage of MCU supply
+   * @brief Get voltage of supply
    * @return voltage [V]
    */
-  float getVoltageMCU();
-
-  /**
-   * @brief Get voltage of power supply of drives
-   * @return voltage [V]
-   */
-  float getVoltageDrive();
-  
-  /**
-   * @brief Get current consumed by MCU
-   * @return current [A]
-   */
-  float getCurrentMCU();
-  
-  /**
-   * @brief Get current consumed by Drive
-   * @return current [A]
-   */
-  float getCurrentDrive();
+  float getVoltageSys();
 
 private:
 
@@ -82,13 +64,7 @@ private:
 
     float            _temperature;      // Temperature of surface of carrier board
 
-    float            _voltageMCU;       // Voltage supply for powering MCU
-
-    float            _voltageDrive;     // Voltage supply for powering Drives
-    
-    float            _currentMCU;       // Current consumed by MCU
-    
-    float            _currentDrive;     // Current consumed by Drive
+    float            _voltageSys;       // Voltage supply of adapter board
     
     bool             _verbosity;        // Set this flag to true via the Constructor to get information via cout
     
