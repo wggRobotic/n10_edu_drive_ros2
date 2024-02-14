@@ -110,7 +110,7 @@ Type=oneshot
 ExecStart=ip link set CAN2 up type can bitrate 500000
 ```
 
-5. Install ROS. Read the [official documentation](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) for more detail
+5. Install ROS. Read the official documentation for reference on [building from source](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) and [prebuilt packages](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html) for more detail.
 ```console
 sudo apt update && sudo apt install locales
 sudo locale-gen en_US en_US.UTF-8
