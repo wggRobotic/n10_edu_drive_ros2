@@ -65,6 +65,8 @@ Depending on the polarity of the motor wiring, the kinematic parameters may have
 
 # Setting up a Raspberry PI4/5 from scratch
 1. Install Raspberry Pi OS or Ubuntu, Ubuntu 22.04.3 server (jammy jellyfish) has been tested on Rasperry Pi4. There is currently (February 12, 2024) no supported Ubuntu LTS version for the Raspberry Pi 5. With an installation of Ubuntu 23.10.1 server edition, it is still possible to compile ROS2 from the sources. You can find a few instructions for this below.
+> **Note:** Using Ubuntu 22.04.3 on a Raspberry Pi 4 results in a 90 second delay at boot, preventing ssh connections during this time. Editing the file /etc/netplan/50-cloud-init.yaml and marking the network interface as "optional:false" avoids the delay. See the last comment in [this forum](https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/2036358) for more detail.
+
 2. Update and install packages
 ```console
 sudo apt update
