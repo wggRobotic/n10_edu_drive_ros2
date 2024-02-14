@@ -78,7 +78,7 @@ sudo apt install can-utils build-essential git
    
 Add the configuration of all three can interfaces to the /boot/firmware/config.txt file. This can be done with the following command:
 ```console
-echo -e '\ndtoverlay=spi1-2cs\ndtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25\ndtoverlay=mcp251xfd,spi0-1,oscillator=40000000,interrupt=13\ndtoverlay=mcp251xfd,spi1-0,oscillator=40000000,interrupt=24' >> /boot/firmware/config.txt
+sudo bash -c "echo -e '\ndtoverlay=spi1-2cs\ndtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25\ndtoverlay=mcp251xfd,spi0-1,oscillator=40000000,interrupt=13\ndtoverlay=mcp251xfd,spi1-0,oscillator=40000000,interrupt=24' >> /boot/firmware/config.txt"
 ```
 > **Note:** For Ubuntu 23.10. the file /boot/firmware/network-config had to be renamed manually (/boot/firmware/network-config.bak) on a Raspberry Pi 5. As long as this file exists, /boot/firmware/config.txt is not read.
 
@@ -94,13 +94,13 @@ In this way, the CAN interface for the motor controllers is always named CAN2. T
 ```console
 [Service]
 Type=oneshot
-ExecStart=ip link set CAN0 up type can bitrate 1000000 dbitrate 2000000 fd on
+ExecStart=ip link set CAN0 up type can bitrate 1000000 dbitrate 1000000 fd on
 ```
 ... then, the file /etc/systemd/system/can1-attach.service
 ```console
 [Service]
 Type=oneshot
-ExecStart=ip link set CAN1 up type can bitrate 1000000 dbitrate 2000000 fd on
+ExecStart=ip link set CAN1 up type can bitrate 1000000 dbitrate 1000000 fd on
 ```
 
 ... and finally the file /etc/systemd/system/can2-attach.service
