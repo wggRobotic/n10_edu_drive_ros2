@@ -218,3 +218,42 @@ The software is structured in three layers. An independent layer enables communi
 <p align="center">
   <img src="/doc/edu_drive_classdiagram.png" width="800"/>
 </p>
+
+#### Adding additional CAN devices
+Suppose you want to develop your own device and read in this data via the CAN bus. In this case, you add a new class that inherits from the SocketCANObserver class. Below is an example of how the implementation might look.
+```console
+  YOURCLASS::YOURCLASS(SocketCAN* can, bool verbosity)
+  {
+    // Remeber a reference, if you also want to send data via CAN (see method send)
+    _can = can;
+  
+    // Set CAN input ID of device. Your class uses this ID to send data to the device.
+    can_frame cf;
+    cf.can_id = YOUR_DEVICE_INPUT_ID;
+  
+    // Set CAN ID that we listen to. Your device is using it as output ID.
+    canid_t canidOutput = YOUR_DEVICE_OUTPUT_ID;
+    setCANId(canidOutput);
+  
+    can->registerObserver(this);
+  }
+  
+  void YOURCLASS::notify(struct can_frame* frame)
+  {
+    // This method is called as soon as messages arrive for the receiver YOUR_DEVICE_OUTPUT_ID
+    // The CAN listener must be started before. This is usually done only once.
+    // Thus, in most cases outside of the user-defined class, if more than one listener is used.
+  }
+  
+  bool YOURCLASS::send()
+  {
+    canid_t idTmp = _cf.can_id;
+    can_frame cf;
+    cf.can_id = YOUR_DEVICE_INPUT_ID;
+    cf.can_dlc = LENGTH_OF_YOUR_MSG;
+    cf.data[0] = BYTE_1;
+    ...
+    cf.data[N] = BYTE_N;
+    return _can->send(&cf);
+  }
+```
