@@ -125,6 +125,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 
 **Only for Raspberry Pi 4 on Ubuntu 22.04.3 LTS**: The following commands are only possible for an installation on LTS versions:
 ```console
+sudo apt update
 sudo apt install ros-humble-ros-base
 sudo apt install python3-colcon-common-extensions
 sudo apt install ros-dev-tools
