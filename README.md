@@ -65,6 +65,8 @@ Depending on the polarity of the motor wiring, the kinematic parameters may have
 
 # Setting up a Raspberry PI4/5 from scratch
 1. Install Raspberry Pi OS or Ubuntu, Ubuntu 22.04.3 server (jammy jellyfish) has been tested on Rasperry Pi4. There is currently (February 12, 2024) no supported Ubuntu LTS version for the Raspberry Pi 5. With an installation of Ubuntu 23.10.1 server edition, it is still possible to compile ROS2 from the sources. You can find a few instructions for this below.
+> **Note:** Using Ubuntu 22.04.3 on a Raspberry Pi 4 results in a 90 second delay at boot, preventing ssh connections during this time. Editing the file /etc/netplan/50-cloud-init.yaml and marking the network interface as "optional:false" avoids the delay. See the last comment in [this forum](https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/2036358) for more detail.
+
 2. Update and install packages
 ```console
 sudo apt update
@@ -76,7 +78,7 @@ sudo apt install can-utils build-essential git
    
 Add the configuration of all three can interfaces to the /boot/firmware/config.txt file. This can be done with the following command:
 ```console
-echo -e '\ndtoverlay=spi1-2cs\ndtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25\ndtoverlay=mcp251xfd,spi0-1,oscillator=40000000,interrupt=13\ndtoverlay=mcp251xfd,spi1-0,oscillator=40000000,interrupt=24' >> /boot/firmware/config.txt
+sudo bash -c "echo -e '\ndtoverlay=spi1-2cs\ndtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25\ndtoverlay=mcp251xfd,spi0-1,oscillator=40000000,interrupt=13\ndtoverlay=mcp251xfd,spi1-0,oscillator=40000000,interrupt=24' >> /boot/firmware/config.txt"
 ```
 > **Note:** For Ubuntu 23.10. the file /boot/firmware/network-config had to be renamed manually (/boot/firmware/network-config.bak) on a Raspberry Pi 5. As long as this file exists, /boot/firmware/config.txt is not read.
 
@@ -92,13 +94,13 @@ In this way, the CAN interface for the motor controllers is always named CAN2. T
 ```console
 [Service]
 Type=oneshot
-ExecStart=ip link set CAN0 up type can bitrate 1000000 dbitrate 2000000 fd on
+ExecStart=ip link set CAN0 up type can bitrate 1000000 dbitrate 1000000 fd on
 ```
 ... then, the file /etc/systemd/system/can1-attach.service
 ```console
 [Service]
 Type=oneshot
-ExecStart=ip link set CAN1 up type can bitrate 1000000 dbitrate 2000000 fd on
+ExecStart=ip link set CAN1 up type can bitrate 1000000 dbitrate 1000000 fd on
 ```
 
 ... and finally the file /etc/systemd/system/can2-attach.service
@@ -108,7 +110,7 @@ Type=oneshot
 ExecStart=ip link set CAN2 up type can bitrate 500000
 ```
 
-5. Install ROS. Read the [official documentation](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) for more detail
+5. Install ROS. Read the official documentation for reference on [building from source](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Development-Setup.html) and [prebuilt packages](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html) for more detail.
 ```console
 sudo apt update && sudo apt install locales
 sudo locale-gen en_US en_US.UTF-8
@@ -123,6 +125,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 
 **Only for Raspberry Pi 4 on Ubuntu 22.04.3 LTS**: The following commands are only possible for an installation on LTS versions:
 ```console
+sudo apt update
 sudo apt install ros-humble-ros-base
 sudo apt install python3-colcon-common-extensions
 sudo apt install ros-dev-tools
@@ -143,7 +146,7 @@ colcon build --symlink-install
 6. Optional: Static IP address
 By default, the configuration of the Ubuntu 22.04. server edition is set to DHCP. If you would like to set a static IP address, you can do this by making the following adjustment:
 ```console
-sudo echo "network: {config: disabled}" > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+sudo bash -c "echo 'network: {config: disabled}' > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg"
 ```
 This switches off the automatism with which the network configuration file is generated. The network configuration file /etc/netplan/50-cloud-init.yaml must now be adapted:
 ```console
