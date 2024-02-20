@@ -5,7 +5,9 @@
 #include "std_msgs/msg/float32.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
+#include "geometry_msgs/msg/accel_stamped.hpp"
 #include <fcntl.h>
+#include <geometry_msgs/msg/detail/accel_stamped__struct.hpp>
 #include <linux/gpio.h>
 #include <sys/ioctl.h>
 
@@ -49,6 +51,7 @@ namespace edu
         _pubTemp             = this->create_publisher<std_msgs::msg::Float32>("temperature", 1);
         _pubVoltageAdapter   = this->create_publisher<std_msgs::msg::Float32>("voltageAdapter", 1);
         _pubOrientation      = this->create_publisher<geometry_msgs::msg::PoseStamped>("pose", 1);
+        _pubAccel            = this->create_publisher<geometry_msgs::msg::AccelStamped>("accel", 1);
 		
         //Publisher of power management shield
         _pubVoltagePwrMgmt = this->create_publisher<std_msgs::msg::Float32>("voltagePwrMgmt", 1);
@@ -280,6 +283,8 @@ namespace edu
             msgEnabled.data.push_back(enableState);
         }
         
+        rclcpp::Time stampReceived = this->get_clock()->now();
+
         _enabled = false;
         if(msgEnabled.data.size()>0)
         {
@@ -307,7 +312,7 @@ namespace edu
         //Sequence number not supported in std_msgs::msg::header in ros2
         //static unsigned int seq = 0;
         //msgOrientation.header.seq = seq++;
-        msgOrientation.header.stamp = this->get_clock()->now();
+        msgOrientation.header.stamp = stampReceived;
         msgOrientation.header.frame_id = "base_link";
         msgOrientation.pose.position.x = 0;
         msgOrientation.pose.position.y = 0;
@@ -317,6 +322,16 @@ namespace edu
         msgOrientation.pose.orientation.y = q[2];
         msgOrientation.pose.orientation.z = q[3];
         _pubOrientation->publish(msgOrientation);
+
+        double a[3];
+        _adapter->getAcceleration(a);
+        geometry_msgs::msg::AccelStamped msgAccel;
+        msgAccel.header.stamp = msgOrientation.header.stamp;
+        msgAccel.header.frame_id = msgOrientation.header.frame_id;
+        msgAccel.accel.linear.x = a[0];
+        msgAccel.accel.linear.y = a[1];
+        msgAccel.accel.linear.z = a[2];
+        _pubAccel->publish(msgAccel);
 
         std_msgs::msg::Float32 msgVoltagePwrMgmt;
         msgVoltagePwrMgmt.data = voltagePwrMgmt;

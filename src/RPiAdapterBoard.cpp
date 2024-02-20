@@ -63,6 +63,13 @@ double RPiAdapterBoard::getVoltageSys()
   return _voltageSys;
 }
 
+void RPiAdapterBoard::getAcceleration(double acc[3])
+{
+  acc[0] = _acceleration[0];
+  acc[1] = _acceleration[1];
+  acc[2] = _acceleration[2];
+}
+
 void RPiAdapterBoard::notify(struct can_frame* frame)
 {
   uint8_t* data = frame->data;

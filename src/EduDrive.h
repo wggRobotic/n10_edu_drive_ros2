@@ -9,10 +9,12 @@
 #include "sensor_msgs/msg/imu.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
+#include "geometry_msgs/msg/accel_stamped.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 #include "MotorController.h"
 #include "RPiAdapterBoard.h"
 #include "PowerManagementBoard.h"
+#include <rclcpp/publisher.hpp>
 
 namespace edu
 {
@@ -103,7 +105,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubTemp;
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltageAdapter;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr    _pubOrientation;
-
+    rclcpp::Publisher<geometry_msgs::msg::AccelStamped>::SharedPtr   _pubAccel;
     // Data available from power management board
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltagePwrMgmt;
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubCurrentPwrMgmt;
