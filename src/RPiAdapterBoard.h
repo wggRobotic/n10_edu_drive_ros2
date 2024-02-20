@@ -38,13 +38,19 @@ public:
    * @brief Get temperature of carrier board
    * @return temperature in degree Celsius
    */
-  float getTemperature();
+  double getTemperature();
 
   /**
    * @brief Get system voltage (provided by supply pins)
    * @return voltage [V]
    */
-  float getVoltageSys();
+  double getVoltageSys();
+
+  /**
+   * @brief Get raw acceleration values of IMU
+   * @param[out] acc Acceleration in x-, y- and z-dimension
+   */
+  void getAcceleration(double acc[3]);
 
 private:
 
@@ -62,9 +68,11 @@ private:
 
     double           _q[4];             // Orientation data as quaternion (layout [w x y z])
 
-    float            _temperature;      // Temperature of surface of carrier board
+    double           _temperature;      // Temperature of surface of carrier board
 
-    float            _voltageSys;       // Voltage supply of adapter board
+    double           _voltageSys;       // Voltage supply of adapter board
+
+    double           _acceleration[3];  // Acceleration in x-, y-, z-dimension.
     
     bool             _verbosity;        // Set this flag to true via the Constructor to get information via cout
     

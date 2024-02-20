@@ -16,8 +16,12 @@ RPiAdapterBoard::RPiAdapterBoard(SocketCAN* can, bool verbosity)
   _q[2] = 0.0;
   _q[3] = 0.0;
 
-  _temperature  = -273.f;
-  _voltageSys   = 0.f;
+  _temperature  = -273.0;
+  _voltageSys   = 0.0;
+
+  _acceleration[0] = 0.0;
+  _acceleration[1] = 0.0;
+  _acceleration[2] = 0.0;
 
   makeCanStdID(SYSID_RPI_ADAPTER, RPI_ADAPTER, &_inputAddress, &_outputAddress, &_broadcastAddress);
   _cf.can_id = _inputAddress;
@@ -49,40 +53,60 @@ void RPiAdapterBoard::getOrientation(double q[4])
   q[3] = _q[3];
 }
 
-float RPiAdapterBoard::getTemperature()
+double RPiAdapterBoard::getTemperature()
 {
   return _temperature;
 }
 
-float RPiAdapterBoard::getVoltageSys()
+double RPiAdapterBoard::getVoltageSys()
 {
   return _voltageSys;
 }
 
 void RPiAdapterBoard::notify(struct can_frame* frame)
 {
-  if(frame->can_dlc==8)
+  uint8_t* data = frame->data;
+  
+  if(frame->can_dlc==8) // Receive quaternion
   {
-    int16_t* data = (int16_t*)frame->data;
-    _q[0] = ((double)data[0]) / 10000.0;
-    _q[1] = ((double)data[1]) / 10000.0;
-    _q[2] = ((double)data[2]) / 10000.0;
-    _q[3] = ((double)data[3]) / 10000.0;
+    int16_t iFused[4];
+    iFused[0] = ((data[0] << 8) & 0xFF00) | data[1];
+    iFused[1] = ((data[2] << 8) & 0xFF00) | data[3];
+    iFused[2] = ((data[4] << 8) & 0xFF00) | data[5];
+    iFused[3] = ((data[6] << 8) & 0xFF00) | data[7];
+    _q[0] = ((double)iFused[0]) / 10000.0;
+    _q[1] = ((double)iFused[1]) / 10000.0;
+    _q[2] = ((double)iFused[2]) / 10000.0;
+    _q[3] = ((double)iFused[3]) / 10000.0;
     
     if(_verbosity)
       std::cout << "w=" << _q[0] << " x=" << _q[1] << " y=" << _q[2] << " z=" << _q[3] << std::endl;
   }
-  else if(frame->can_dlc==4)
+  else if(frame->can_dlc==4) // Receive temperature and voltage
   {
-    int16_t*   data = (int16_t*)frame->data;
-    _temperature    = ((float)data[0]) / 100.f;
-    uint16_t* udata = (uint16_t*)(&(frame->data[2]));
-    _voltageSys     = ((float)udata[0]) / 100.f;
+    int16_t temp    = ((data[0] << 8) & 0xFF00) | data[1];
+    int16_t voltage = ((data[2] << 8) & 0xFF00) | data[3];
+    _temperature    = ((double)temp) / 100.0;
+    _voltageSys     = ((double)voltage) / 100.0;
     
     if(_verbosity)
       std::cout << "T=" << _temperature << "°C Vsys=" << _voltageSys << std::endl;
       
     _init = true;
+  }
+  else if(frame->can_dlc==6) // Receive raw acceleration measurement
+  {
+    int16_t acc[3];
+    acc[0] = ((data[0] << 8) & 0xFF00) | data[1];
+    acc[1] = ((data[2] << 8) & 0xFF00) | data[3];
+    acc[2] = ((data[4] << 8) & 0xFF00) | data[5];
+    _acceleration[0] = ((double)acc[0]) / 1000.0;
+    _acceleration[1] = ((double)acc[1]) / 1000.0;
+    _acceleration[2] = ((double)acc[2]) / 1000.0;
+  }
+  else
+  {
+    std::cout << "RPiAdapterBoard::notify: Warning - wrong message format received." << std::endl;
   }
 }
 
