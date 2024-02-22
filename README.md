@@ -64,6 +64,14 @@ Depending on the polarity of the motor wiring, the kinematic parameters may have
 ### Example for a Mecanum drive
 <img src="https://latex.codecogs.com/svg.image?\mathbf{T}&space;=&space;\frac{1}{r}\begin{pmatrix}&space;&space;1&space;&&space;-1&space;&&space;-\frac{l_x&plus;l_y}{2}\\&space;-1&space;&&space;-1&space;&&space;-\frac{l_x&plus;l_y}{2}\\&space;&space;1&space;&&space;&space;1&space;&&space;-\frac{l_x&plus;l_y}{2}\\&space;-1&space;&&space;&space;1&space;&&space;-\frac{l_x&plus;l_y}{2}\end{pmatrix}" title="https://latex.codecogs.com/svg.image?\mathbf{T} = \frac{1}{r}\begin{pmatrix} 1 & -1 & -\frac{l_x+l_y}{2}\\ -1 & -1 & -\frac{l_x+l_y}{2}\\ 1 & 1 & -\frac{l_x+l_y}{2}\\ -1 & 1 & -\frac{l_x+l_y}{2}\end{pmatrix}" />
 
+> **Concrete parameter example:** for Faulhaber motors, series 2224U018SR, gear ratio: 44:1, wheel diameter 100mm ($r=0.05m$), robot length $lx=0.25m$, robot width $l_y=0.35m$
+
+$k_{x,n} = \pm\frac{1}{r} = \pm 20$
+
+$k_{y,n} = \pm\frac{1}{r} = \pm 20$ (mecanum wheels) or  $k_{y,n} = 0$ (skid steering)
+
+$k_{w,n} = \pm\frac{1}{r} \cdot \frac{l_x+l_y}{2} = \pm 6$ (mecanum wheels) or $k_{w,n} = \pm\frac{l_y}{2 \cdot r} = \pm 3.5$ (skid steering)
+
 # Setting up a Raspberry PI4/5 from scratch
 1. Install Raspberry Pi OS or Ubuntu, Ubuntu 22.04.3 server (jammy jellyfish) has been tested on Rasperry Pi4. There is currently (February 12, 2024) no supported Ubuntu LTS version for the Raspberry Pi 5. With an installation of Ubuntu 23.10.1 server edition, it is still possible to compile ROS2 from the sources. You can find a few instructions for this below.
 > **Note:** Using Ubuntu 22.04.3 on a Raspberry Pi 4 results in a 90 second delay at boot, preventing ssh connections during this time. Editing the file /etc/netplan/50-cloud-init.yaml and marking the network interface as "optional:false" avoids the delay. See the last comment in [this forum](https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/2036358) for more detail.
