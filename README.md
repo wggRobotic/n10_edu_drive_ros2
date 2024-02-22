@@ -3,6 +3,7 @@ This package comprises a ROS2 interface for EduArt's generic drive concept. It c
 
 <p align="center">
   <img src="/images/Prototype_yellow.jpg"/>
+  <em>Robot prototype using the Free Kinematic Kit.</em>
 </p>
 
 ## Launching the Robot
