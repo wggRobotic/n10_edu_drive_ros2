@@ -19,7 +19,7 @@
       canID: 0
       gearRatio: 89.0
       encoderRatio: 2048.0
-      rpmMax: 90.0
+      rpmMax: 60.0
       invertEnc: 1
       drive0: #front right
         channel: 0
@@ -32,7 +32,7 @@
       canID: 1
       gearRatio: 89.0
       encoderRatio: 2048.0
-      rpmMax: 90.0
+      rpmMax: 60.0
       invertEnc: 1
       drive0: #front left
         channel: 0
