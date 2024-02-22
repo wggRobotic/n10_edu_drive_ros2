@@ -18,7 +18,7 @@
     controller0:
       canID: 0
       gearRatio: 44.0
-      encoderRatio: 1024.0
+      encoderRatio: 2048.0
       rpmMax: 134.0
       invertEnc: 0
       drive0:
@@ -31,7 +31,7 @@
     controller1:
       canID: 1
       gearRatio: 44.0
-      encoderRatio: 1024.0
+      encoderRatio: 2048.0
       rpmMax: 134.0
       invertEnc: 0
       drive0:
