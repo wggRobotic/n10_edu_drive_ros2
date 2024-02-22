@@ -2,7 +2,7 @@
 This package comprises a ROS2 interface for EduArt's generic drive concept. It covers several kinematic concepts: Differential drive, Mecanum steering and Skid steering. All three can be used in dependency of the mounted wheels and the configuration of YAML parameters.
 
 <p align="center">
-  <img src="/images/edu_drive.png"/>
+  <img src="/images/Prototype_yellow.jpg"/>
 </p>
 
 ## Launching the Robot
