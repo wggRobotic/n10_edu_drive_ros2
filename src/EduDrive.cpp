@@ -10,6 +10,8 @@
 #include <geometry_msgs/msg/detail/accel_stamped__struct.hpp>
 #include <linux/gpio.h>
 #include <sys/ioctl.h>
+#include "tf2/LinearMath/Quaternion.h"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 
 
 namespace edu
@@ -28,6 +30,7 @@ namespace edu
         }
         delete _pwr_mgmt;
         delete _adapter;
+        delete _odometry;
 
     }
 
@@ -53,13 +56,17 @@ namespace edu
         _pubOrientation      = this->create_publisher<geometry_msgs::msg::PoseStamped>("pose", 1);
         _pubAccel            = this->create_publisher<geometry_msgs::msg::AccelStamped>("accel", 1);
 		
-        //Publisher of power management shield
+        // Publisher of power management shield
         _pubVoltagePwrMgmt = this->create_publisher<std_msgs::msg::Float32>("voltagePwrMgmt", 1);
         _pubCurrentPwrMgmt = this->create_publisher<std_msgs::msg::Float32>("currentPwrMgmt", 1);
 
+        // Broadcaster for odometry data
+        _tf_broadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+
+        // CAN devices
         _adapter = new RPiAdapterBoard(&can, verbosity);
         _pwr_mgmt = new PowerManagementBoard(&can, verbosity);
-        
+
         _vMax = 0.f;
 
         bool isKinematicsValid = true;
@@ -102,6 +109,8 @@ namespace edu
             }
         }
 
+        _odometry = new Odometry(ODOMETRY_ABSOLUTE_MODE, _mc[0]->getMotorParams()[0].kinematics, _mc[0]->getMotorParams()[1].kinematics, _mc[1]->getMotorParams()[0].kinematics, _mc[1]->getMotorParams()[1].kinematics);
+        
         RCLCPP_INFO_STREAM(this->get_logger(), "Instanciated robot with vMax: " << _vMax << " m/s and omegaMax: " << _omegaMax << " rad/s");
     }
 
@@ -243,6 +252,7 @@ namespace edu
         
         std_msgs::msg::Float32MultiArray msgRPM;
         std_msgs::msg::ByteMultiArray msgEnabled;
+        geometry_msgs::msg::TransformStamped msgTransform;
 
         bool controllersInitialized = true;
         for (std::vector<MotorController *>::iterator it = std::begin(_mc); it != std::end(_mc); ++it)
@@ -294,6 +304,24 @@ namespace edu
                 _enabled &= msgEnabled.data[i];
             }
         }
+
+        _odometry->update((uint64_t) stampReceived.nanoseconds(), msgRPM.data.at(0),msgRPM.data.at(1),msgRPM.data.at(2),msgRPM.data.at(3));
+        
+        Pose pose = _odometry->get_pose();
+        msgTransform.header.stamp = stampReceived;
+        msgTransform.header.frame_id = "odom";
+        msgTransform.child_frame_id = "base_link";
+
+        tf2::Quaternion q_odom;
+        q_odom.setEuler(0, 0, pose.theta);
+        msgTransform.transform.translation.x = pose.x;
+        msgTransform.transform.translation.y = pose.y;
+        msgTransform.transform.translation.z = 0;
+        msgTransform.transform.rotation.w = q_odom.w();
+        msgTransform.transform.rotation.x = q_odom.x();
+        msgTransform.transform.rotation.y = q_odom.y();
+        msgTransform.transform.rotation.z = q_odom.z(); 
+        _tf_broadcaster->sendTransform(msgTransform);
 
         _pubRPM->publish(msgRPM);
         _pubEnabled->publish(msgEnabled);
