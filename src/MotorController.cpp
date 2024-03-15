@@ -442,10 +442,10 @@ void MotorController::notify(struct can_frame* frame)
     if(frame->data[0] == RESPONSE_MOTOR_RPM)
     {
     
-      short val1 = (frame->data[1] | (frame->data[2] << 8));
-      short val2 = (frame->data[3] | (frame->data[4] << 8));
-      _rpm[0] = ((float)val1)/10.f;
-      _rpm[1] = ((float)val2)/10.f;
+      short val1 = (frame->data[1] << 8 | (frame->data[2]));
+      short val2 = (frame->data[3] << 8 | (frame->data[4]));
+      _rpm[0] = ((float)val1) / 100.f;
+      _rpm[1] = ((float)val2) / 100.f;
       _pos[0] = 0.f;
       _pos[1] = 0.f;
     }
