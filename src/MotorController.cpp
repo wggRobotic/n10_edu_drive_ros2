@@ -39,7 +39,7 @@ MotorController::MotorController(SocketCAN* can, ControllerParams params, bool v
       std::cout << "       channel: " << _params.motorParams[i].channel << std::endl;
       std::cout << "       kinematics: ";
       for(unsigned int j=0; j<_params.motorParams[i].kinematics.size(); j++)
-        std::cout << _params.motorParams[i].kinematics[j] << " ";
+        std::cout << _params.motorParams[i].kinematics[j] << " ";      
       std::cout << std::endl;
     }
 
@@ -330,6 +330,12 @@ bool MotorController::setPWM(int pwm[2])
   if(vel1<-100) vel1 = -100;
   if(vel2>100)  vel2 = 100;
   if(vel2<-100) vel2 = -100;
+
+   if(_params.invertEnc){
+    vel1 = -vel1;
+    vel2 = -vel2;
+   }
+
   _cf.data[0] = CMD_MOTOR_SETPWM;
   _cf.data[1] = (char)vel1;
   _cf.data[2] = (char)vel2;
@@ -343,6 +349,12 @@ bool MotorController::setRPM(float rpm[2])
 
   int vel1 = (int)(rpm[0]*100.f);
   int vel2 = (int)(rpm[1]*100.f);
+
+  if(_params.invertEnc){
+    vel1 = -vel1;
+    vel2 = -vel2;
+   }
+
   _cf.data[0] = CMD_MOTOR_SETRPM;
   _cf.data[1] = (char)(vel1 >> 8) & 0xFF;
   _cf.data[2] = (char)(vel1)      & 0xFF;
@@ -441,12 +453,18 @@ void MotorController::notify(struct can_frame* frame)
   {
     if(frame->data[0] == RESPONSE_MOTOR_RPM)
     {
-      short val1 = (frame->data[1] << 8| (frame->data[2]));
-      short val2 = (frame->data[3] << 8| (frame->data[4]));
+    
+      short val1 = (frame->data[1] << 8 | (frame->data[2]));
+      short val2 = (frame->data[3] << 8 | (frame->data[4]));
       _rpm[0] = ((float)val1) / 100.f;
       _rpm[1] = ((float)val2) / 100.f;
       _pos[0] = 0.f;
       _pos[1] = 0.f;
+
+      if(_params.invertEnc){
+        _rpm[0] = - _rpm[0];
+        _rpm[1] = - _rpm[1];
+      }
     }
     else if(frame->data[0] == RESPONSE_MOTOR_POS)
     {
@@ -454,6 +472,11 @@ void MotorController::notify(struct can_frame* frame)
       _rpm[1] = 0.f;
       _pos[0] = (frame->data[1] | (frame->data[2] << 8));
       _pos[1] = (frame->data[3] | (frame->data[4] << 8));
+
+      if(_params.invertEnc){
+        _pos[0] = - _pos[0];
+        _pos[1] = - _pos[1];
+      }
     }
     _enabled = (frame->data[5] != 0);
     if(_verbosity)
