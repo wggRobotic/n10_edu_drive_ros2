@@ -23,10 +23,10 @@
       invertEnc: 1
       drive0: #front right
         channel: 0
-        kinematics: [20.0, 20.0, 6.1]
+        kinematics: [-20.0, -20.0, -6.1]
       drive1: #rear right
         channel: 1
-        kinematics: [20.0, -20.0, 6.1]
+        kinematics: [-20.0, 20.0, -6.1]
 
     controller1:
       canID: 1
@@ -36,7 +36,7 @@
       invertEnc: 1
       drive0: #front left
         channel: 0
-        kinematics: [-20.0, 20.0, 6.1]
+        kinematics: [20.0, -20.0, -6.1]
       drive1: #rear left
         channel: 1
-        kinematics: [-20.0, -20.0, 6.1]
+        kinematics: [20.0, 20.0, -6.1]
