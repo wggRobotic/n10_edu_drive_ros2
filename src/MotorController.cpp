@@ -341,8 +341,8 @@ bool MotorController::setRPM(float rpm[2])
 {
   _cf.can_dlc = 5;
 
-  int vel1 = (int)(rpm[0]*10.f);
-  int vel2 = (int)(rpm[1]*10.f);
+  int vel1 = (int)(rpm[0]*100.f);
+  int vel2 = (int)(rpm[1]*100.f);
   _cf.data[0] = CMD_MOTOR_SETRPM;
   _cf.data[1] = (char)(vel1 >> 8) & 0xFF;
   _cf.data[2] = (char)(vel1)      & 0xFF;
