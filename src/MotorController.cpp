@@ -447,11 +447,6 @@ void MotorController::notify(struct can_frame* frame)
       _rpm[1] = ((float)val2) / 100.f;
       _pos[0] = 0.f;
       _pos[1] = 0.f;
-
-      if(_params.invertEnc){
-        _rpm[0] *= -1;
-        _rpm[0] *= -1;
-      };
     }
     else if(frame->data[0] == RESPONSE_MOTOR_POS)
     {
