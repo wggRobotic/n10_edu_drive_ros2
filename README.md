@@ -214,6 +214,19 @@ Below you can see the electrical interfaces of the Free Kinematics Kit. There ar
   <img src="/images/Free_Kinematics_Kit_Electrical_Interface_Desc_1920.jpg" width="800"/>
 </p>
 
+In addition to the interface of the power supply shield the pinout of the motorcontroller boards is described below. Motors can be either connected on the 2x3 box header or on the 1x6 pin header.
+
+<p align="center">
+  <img src="/images/Motorcontroller.jpg" width="800"/>
+</p>
+
+When using a generic motor with the EduArt motorcontroller boards the motor has to be wired correctly to match the above pinout description. Below is the motor wiring diagram of a generic motor.The encoder supply voltage +5V and GND are sensitive to reverse voltage. Pay attention when connecting these wires!
+
+<p align="center">
+  <img src="/images/example_motor.jpg" width="600"/>
+</p>
+
+
 Integrated voltage monitoring of the power management module protects your robot in the event of incorrect operation:
 * If the voltage is too low (< 17.5 V), the drives are deactivated after 10 seconds.
 * If the voltage remains below 17.5 V for longer than 120 seconds, the system switches off automatically. This protects your battery from deep discharge.
