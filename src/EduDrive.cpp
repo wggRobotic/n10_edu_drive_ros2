@@ -96,14 +96,15 @@ namespace edu
             	std::vector<double> kinematics = _mc[i]->getMotorParams()[j].kinematics;
 	         	double kx = kinematics[0];
 	         	double kw = kinematics[2];
-	         	if(fabs(kx)>1e-3)
+	         	float rpmMax = std::max(cp[i].motorParams[0].rpmMax, cp[i].motorParams[1].rpmMax);
+                if(fabs(kx)>1e-3)
 	         	{
-	            	float vMax = fabs(cp[i].rpmMax / 60.f * (2.f * M_PI) / kx);
+	            	float vMax = fabs(rpmMax / 60.f * (2.f * M_PI) / kx);
 	            	if(vMax > _vMax) _vMax = vMax;
 	            }
 	            if(fabs(kw)>1e-3)
 	            {
-	            	float omegaMax = fabs(cp[i].rpmMax / 60.f * (2.f * M_PI) / kw);
+	            	float omegaMax = fabs(rpmMax / 60.f * (2.f * M_PI) / kw);
 	            	if(omegaMax > _omegaMax) _omegaMax = omegaMax;
 		         }
             }

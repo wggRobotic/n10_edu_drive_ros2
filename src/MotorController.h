@@ -22,10 +22,19 @@ namespace edu
     std::vector<double> kinematics;
 
     enum CanResponse responseMode;
-
+    
+    int invertEnc;
+    float gearRatio;
+    float encoderRatio;
+    float rpmMax;
+    
     MotorParams()
     {
-      channel = 0;
+      channel       = 0;
+      invertEnc     = 0;
+      gearRatio     = 0.0f;
+      encoderRatio  = 0.0f;
+      rpmMax        = 0.0f;
       kinematics.clear();
       responseMode = CAN_RESPONSE_RPM;
     }
@@ -36,9 +45,13 @@ namespace edu
      */
     MotorParams(const MotorParams &p)
     {
-      channel = p.channel;
-      kinematics = p.kinematics;
-      responseMode = p.responseMode;
+      channel       = p.channel;
+      kinematics    = p.kinematics;
+      responseMode  = p.responseMode;
+      gearRatio     = p.gearRatio;
+      encoderRatio  = p.encoderRatio;
+      rpmMax        = p.rpmMax;
+      invertEnc     = p.invertEnc;
     }
   };
 
@@ -56,14 +69,8 @@ namespace edu
     float ki;
     float kd;
     int antiWindup;
-    int invertEnc;
+
     CanResponse responseMode;
-
-    // Common motor parameters
-    float gearRatio;
-    float encoderRatio;
-    float rpmMax;
-
     std::vector<MotorParams> motorParams;
 
     /**
@@ -76,14 +83,10 @@ namespace edu
       inputWeight = 0.8f;
       maxPulseWidth = 50;
       timeout = 300;
-      gearRatio = 0.f;
-      encoderRatio = 0.f;
-      rpmMax = 0.f;
       kp = 0.f;
       ki = 0.f;
       kd = 0.f;
       antiWindup = 1;
-      invertEnc = 0;
       responseMode = CAN_RESPONSE_RPM;
 
       motorParams.resize(2);
@@ -105,14 +108,10 @@ namespace edu
       inputWeight = p.inputWeight;
       maxPulseWidth = p.maxPulseWidth;
       timeout = p.timeout;
-      gearRatio = p.gearRatio;
-      encoderRatio = p.encoderRatio;
-      rpmMax = p.rpmMax;
       kp = p.kp;
       ki = p.ki;
       kd = p.kd;
       antiWindup = p.antiWindup;
-      invertEnc = p.invertEnc;
       responseMode = p.responseMode;
       motorParams = p.motorParams;
     }
@@ -198,7 +197,7 @@ namespace edu
      * @param[in] invert set to true, if channels need to be inverted
      * @return successful transmission of configure command
      */
-    bool invertEncoderPolarity(bool invert);
+    bool invertEncoderPolarity(bool invert[2]);
 
     /**
      * Get assigned canID via constructor
@@ -223,29 +222,29 @@ namespace edu
 
     /**
      * Set gear ratio (factor between motor and wheel revolutions)
-     * @param[in] gearRatio (motor rev) / (wheel rev) for motor 1 and 2
+     * @param[in] gearRatio (motor rev) / (wheel rev) for motor 1 and 2 separately
      * @return true==successful CAN transmission
      */
-    bool setGearRatio(float gearRatio);
+    bool setGearRatio(float gearRatio[2]);
 
     /**
      * Accessor to gear ratio parameter
      * @return gearRatio (motor rev) / (wheel rev) for motor 1 and 2
      */
-    float getGearRatio();
+    float getGearRatio(size_t motor_num);
 
     /**
      * Set number of encoder ticks per motor revolution
      * @param[in] encoderTicksPerRev encoder ticks per motor revolution for motor 1 and 2
      * @return true==successful CAN transmission
      */
-    bool setEncoderTicksPerRev(float encoderTicksPerRev);
+    bool setEncoderTicksPerRev(float encoderTicksPerRevseparately[2]);
 
     /**
      * Accessor to parameter representing encoder ticks per motor revolution
      * @return encoder ticks per motor revolution for motor 1 and 2
      */
-    float getEncoderTicksPerRev();
+    float getEncoderTicksPerRev(size_t motor_num);
 
     /**
      * Set scaling parameter for PWM frequency. The base frequency is 500kHz, of which one can apply a fractional amount, e.g.

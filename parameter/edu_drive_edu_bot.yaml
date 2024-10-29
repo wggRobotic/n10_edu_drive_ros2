@@ -2,7 +2,7 @@
   ros__parameters:
     usingPowerManagementBoard: true
     verbosity: false
-    canInterface: CAN2
+    canInterface: eduart-can2
     frequencyScale: 32
     inputWeight: 0.2
     maxPulseWidth: 100
@@ -17,26 +17,34 @@
     
     controller0:
       canID: 0
-      gearRatio: 89.0
-      encoderRatio: 2048.0
-      rpmMax: 60.0
-      invertEnc: 1
       drive0: #front right
         channel: 0
-        kinematics: [-20.0, -20.0, -6.1]
+        kinematics: [20.0, 20.0, 6.1]
+        gearRatio: 89.0
+        encoderRatio: 2048.0
+        rpmMax: 60.0
+        invertEnc: 1
       drive1: #rear right
         channel: 1
-        kinematics: [-20.0, 20.0, -6.1]
+        kinematics: [20.0, -20.0, 6.1]
+        gearRatio: 89.0
+        encoderRatio: 2048.0
+        rpmMax: 60.0
+        invertEnc: 1
 
     controller1:
       canID: 1
-      gearRatio: 89.0
-      encoderRatio: 2048.0
-      rpmMax: 60.0
-      invertEnc: 1
       drive0: #front left
         channel: 0
-        kinematics: [20.0, -20.0, -6.1]
+        kinematics: [-20.0, 20.0, 6.1]
+        gearRatio: 89.0
+        encoderRatio: 2048.0
+        rpmMax: 60.0
+        invertEnc: 1
       drive1: #rear left
         channel: 1
-        kinematics: [20.0, 20.0, -6.1]
+        kinematics: [-20.0, -20.0, 6.1]
+        gearRatio: 89.0
+        encoderRatio: 2048.0
+        rpmMax: 60.0
+        invertEnc: 1

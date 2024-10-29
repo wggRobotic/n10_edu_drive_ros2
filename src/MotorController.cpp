@@ -28,10 +28,6 @@ MotorController::MotorController(SocketCAN* can, ControllerParams params, bool v
     std::cout << "responseMode   = " << params.responseMode << std::endl;
 
     std::cout << std::endl << "--- Controller #" << params.canID << " parameters ---" << std::endl;
-    std::cout << "    gearRatio      = " << params.gearRatio << std::endl;
-    std::cout << "    encoderRatio   = " << params.encoderRatio << std::endl;
-    std::cout << "    rpmMax         = " << params.rpmMax << std::endl;
-    std::cout << "    invertEnc      = " << params.invertEnc << std::endl;
 
     for(unsigned int i=0; i<2; i++)
     {
@@ -41,6 +37,10 @@ MotorController::MotorController(SocketCAN* can, ControllerParams params, bool v
       for(unsigned int j=0; j<_params.motorParams[i].kinematics.size(); j++)
         std::cout << _params.motorParams[i].kinematics[j] << " ";      
       std::cout << std::endl;
+      std::cout << "       gearRatio      = " << params.motorParams[i].gearRatio << std::endl;
+      std::cout << "       encoderRatio   = " << params.motorParams[i].encoderRatio << std::endl;
+      std::cout << "       rpmMax         = " << params.motorParams[i].rpmMax << std::endl;
+      std::cout << "       invertEnc      = " << params.motorParams[i].invertEnc << std::endl;
     }
 
     std::cout << "---------------------------" << std::endl << std::endl;
@@ -109,13 +109,15 @@ void MotorController::init()
     retval = false;
   }
   
-  if(!setGearRatio(_params.gearRatio))
+  float gearRatios[] = {_params.motorParams[0].gearRatio, _params.motorParams[1].gearRatio};
+  if(!setGearRatio(gearRatios))
   {
     std::cout << "#MotorController Setting gear ratio failed for device " << _params.canID << std::endl;
     retval = false;
   }
   
-  if(!setEncoderTicksPerRev(_params.encoderRatio))
+  float ticksPerRev[] = {_params.motorParams[0].encoderRatio, _params.motorParams[1].encoderRatio};
+  if(!setEncoderTicksPerRev(ticksPerRev))
   {
     std::cout << "#MotorController Setting encoder parameters failed for device " << _params.canID << std::endl;
     retval = false;
@@ -151,7 +153,8 @@ void MotorController::init()
     retval = false;
   }
   
-  if(!invertEncoderPolarity(_params.invertEnc))
+  bool invertEnc[] = {(bool)_params.motorParams[0].invertEnc, (bool)_params.motorParams[1].invertEnc};
+  if(!invertEncoderPolarity(invertEnc))
   {
     std::cout << "#MotorController Setting encoder polarity failed for device " << _params.canID << std::endl;
     retval = false;
@@ -226,14 +229,12 @@ bool MotorController::configureResponse(enum CanResponse mode)
   return _can->send(&_cf);
 }
 
-bool MotorController::invertEncoderPolarity(bool invert)
+bool MotorController::invertEncoderPolarity(bool invert[2])
 {
   _cf.can_dlc = 2;
   _cf.data[0] = CMD_MOTOR_INVERTENC;
-  if(invert)
-    _cf.data[1] = 1;
-  else
-    _cf.data[1] = 0;
+  _cf.data[1] = (invert[0]) ? 1 : 0;
+  _cf.data[2] = (invert[1]) ? 1 : 0;
   return _can->send(&_cf);
 }
 
@@ -259,26 +260,30 @@ unsigned short MotorController::getTimeout()
   return _params.timeout;
 }
 
-bool MotorController::setGearRatio(float gearRatio)
+bool MotorController::setGearRatio(float gearRatio[2])
 {
-  bool retval = sendFloat(CMD_MOTOR_GEARRATIO, gearRatio);
-  retval &= sendFloat(CMD_MOTOR_GEARRATIO2, gearRatio);
-  if(retval)
-    _params.gearRatio = gearRatio;
+  bool retval  = sendFloat(CMD_MOTOR_GEARRATIO,  gearRatio[0]);
+  retval      &= sendFloat(CMD_MOTOR_GEARRATIO2, gearRatio[1]);
+  if(retval){
+    _params.motorParams[0].gearRatio = gearRatio[0];
+    _params.motorParams[1].gearRatio = gearRatio[1];
+  }
   return retval;
 }
 
-float MotorController::getGearRatio()
+float MotorController::getGearRatio(size_t motor_num)
 {
-  return _params.gearRatio;
+  return _params.motorParams[motor_num].gearRatio;
 }
 
-bool MotorController::setEncoderTicksPerRev(float encoderTicksPerRev)
+bool MotorController::setEncoderTicksPerRev(float encoderTicksPerRev[2])
 {
-  bool retval = sendFloat(CMD_MOTOR_TICKSPERREV, encoderTicksPerRev);
-  retval &= sendFloat(CMD_MOTOR_TICKSPERREV2, encoderTicksPerRev);
-  if(retval)
-    _params.encoderRatio = encoderTicksPerRev;
+  bool retval  = sendFloat(CMD_MOTOR_TICKSPERREV,  encoderTicksPerRev[0]);
+  retval      &= sendFloat(CMD_MOTOR_TICKSPERREV2, encoderTicksPerRev[1]);
+  if(retval){
+    _params.motorParams[0].encoderRatio = encoderTicksPerRev[0];
+    _params.motorParams[1].encoderRatio = encoderTicksPerRev[1];
+  }
   return retval;
 }
 
