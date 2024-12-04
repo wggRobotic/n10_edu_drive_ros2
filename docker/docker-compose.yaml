@@ -1,0 +1,25 @@
+services:
+    edu_drive_ros2:
+        build:
+          context: ../../
+          dockerfile: ./edu_drive_ros2/docker/Dockerfile
+        image: edu_drive_ros2
+        container_name: edu_drive_ros2-0.1.0
+        user: user
+        restart: always
+        privileged: true
+        ipc: host
+        pid: host
+        mem_limit: 300mb
+        environment:
+            - EDU_ROBOT_NAMESPACE=${EDU_ROBOT_NAMESPACE}
+            - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION}
+            - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+        network_mode: "host"
+        command: bash -c 'cd /home/user/ros/launch_content; ros2 launch edu_drive_edu_bot.launch.py'
+        # command: /bin/bash
+        # stdin_open: true
+        volumes:
+            - './launch_content:/home/user/ros/launch_content'
+        #devices:
+        #    - '/dev:/dev'
