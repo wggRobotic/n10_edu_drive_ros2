@@ -335,8 +335,6 @@ bool MotorController::setPWM(int pwm[2])
   if(vel1<-100) vel1 = -100;
   if(vel2>100)  vel2 = 100;
   if(vel2<-100) vel2 = -100;
-  if(_params.motorParams[0].invertEnc) vel1 = -vel1;
-  if(_params.motorParams[1].invertEnc) vel2 = -vel2;
 
   _cf.data[0] = CMD_MOTOR_SETPWM;
   _cf.data[1] = (char)vel1;
@@ -351,9 +349,6 @@ bool MotorController::setRPM(float rpm[2])
 
   int vel1 = (int)(rpm[0]*100.f);
   int vel2 = (int)(rpm[1]*100.f);
-
-  if(_params.motorParams[0].invertEnc) vel1 = -vel1;
-  if(_params.motorParams[1].invertEnc) vel2 = -vel2;
 
   _cf.data[0] = CMD_MOTOR_SETRPM;
   _cf.data[1] = (char)(vel1 >> 8) & 0xFF;
@@ -460,9 +455,6 @@ void MotorController::notify(struct can_frame* frame)
       _rpm[1] = ((float)val2) / 100.f;
       _pos[0] = 0.f;
       _pos[1] = 0.f;
-      if(_params.motorParams[0].invertEnc) _rpm[0] = - _rpm[0];
-      if(_params.motorParams[1].invertEnc) _rpm[1] = - _rpm[1];
-
     }
     else if(frame->data[0] == RESPONSE_MOTOR_POS)
     {
@@ -470,9 +462,6 @@ void MotorController::notify(struct can_frame* frame)
       _rpm[1] = 0.f;
       _pos[0] = (frame->data[1] | (frame->data[2] << 8));
       _pos[1] = (frame->data[3] | (frame->data[4] << 8));
-      if(_params.motorParams[0].invertEnc)  _pos[0] = - _pos[0];
-      if(_params.motorParams[1].invertEnc)  _pos[1] = - _pos[1];
-
     }
     _enabled = (frame->data[5] != 0);
     if(_verbosity)
