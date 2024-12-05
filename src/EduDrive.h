@@ -15,6 +15,8 @@
 #include "RPiAdapterBoard.h"
 #include "PowerManagementBoard.h"
 #include <rclcpp/publisher.hpp>
+#include "Odometry.h"
+#include "tf2_ros/transform_broadcaster.h"
 
 namespace edu
 {
@@ -106,9 +108,13 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltageAdapter;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr    _pubOrientation;
     rclcpp::Publisher<geometry_msgs::msg::AccelStamped>::SharedPtr   _pubAccel;
+    
     // Data available from power management board
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubVoltagePwrMgmt;
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr             _pubCurrentPwrMgmt;
+
+    // Odometry
+    std::unique_ptr<tf2_ros::TransformBroadcaster>                   _tf_broadcaster;
 
     rclcpp::Time                   _lastCmd;       // Time elapsed since last call
 
@@ -117,6 +123,7 @@ private:
     std::vector<MotorController*>  _mc;            // Vector containing pointer to all motor controller instances
     RPiAdapterBoard*               _adapter;       // Adapter board
     PowerManagementBoard*          _pwr_mgmt;      // Power management board
+    Odometry*                      _odometry;      // Odometry model of robot
 
     double _vMax;
     double _omegaMax;

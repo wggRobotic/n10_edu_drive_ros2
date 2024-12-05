@@ -113,7 +113,7 @@ void RPiAdapterBoard::notify(struct can_frame* frame)
   }
   else
   {
-    std::cout << "RPiAdapterBoard::notify: Warning - wrong message format received." << std::endl;
+    //std::cout << "RPiAdapterBoard::notify: Warning - wrong message format received." << std::endl; //ToDo: Adapt this node to new firmware
   }
 }
 
