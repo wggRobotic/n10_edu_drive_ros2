@@ -96,7 +96,7 @@ namespace edu
             	std::vector<double> kinematics = _mc[i]->getMotorParams()[j].kinematics;
 	         	double kx = kinematics[0];
 	         	double kw = kinematics[2];
-	         	float rpmMax = std::max(cp[i].motorParams[0].rpmMax, cp[i].motorParams[1].rpmMax);
+	         	float rpmMax = std::min(cp[i].motorParams[0].rpmMax, cp[i].motorParams[1].rpmMax); // the slowest motor determines the maximum speed of the system
                 if(fabs(kx)>1e-3)
 	         	{
 	            	float vMax = fabs(rpmMax / 60.f * (2.f * M_PI) / kx);
