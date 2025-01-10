@@ -98,13 +98,6 @@ int main(int argc, char *argv[])
          cp.motorParams[d].encoderRatio   = edu_drive->get_parameter(driveID + std::string(".encoderRatio")).as_double();
          cp.motorParams[d].rpmMax         = edu_drive->get_parameter(driveID + std::string(".rpmMax")).as_double();
          cp.motorParams[d].invertEnc      = edu_drive->get_parameter(driveID + std::string(".invertEnc")).as_int();
-
-         if(cp.motorParams[d].invertEnc){
-            cp.motorParams[d].kinematics[0] = cp.motorParams[d].kinematics[0];
-            cp.motorParams[d].kinematics[1] = cp.motorParams[d].kinematics[1];
-            cp.motorParams[d].kinematics[2] = cp.motorParams[d].kinematics[2];
-            cp.motorParams[d].kinematics[3] = cp.motorParams[d].kinematics[3];
-         }
       }
       // ------------------------------
 
