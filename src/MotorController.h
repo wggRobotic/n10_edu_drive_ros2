@@ -238,7 +238,7 @@ namespace edu
      * @param[in] encoderTicksPerRev encoder ticks per motor revolution for motor 1 and 2
      * @return true==successful CAN transmission
      */
-    bool setEncoderTicksPerRev(float encoderTicksPerRevseparately[2]);
+    bool setEncoderTicksPerRev(float encoderTicksPerRev[2]);
 
     /**
      * Accessor to parameter representing encoder ticks per motor revolution
