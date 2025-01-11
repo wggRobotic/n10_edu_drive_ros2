@@ -156,6 +156,7 @@ echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
 ```
 
 ### 9.  Optional: Static IP address
+#### Ubuntu 22.04. server edition
 By default, the configuration of the Ubuntu 22.04. server edition is set to DHCP. If you would like to set a static IP address, you can do this by making the following adjustment:
 ```bash
 sudo bash -c "echo 'network: {config: disabled}' > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg"
@@ -176,6 +177,11 @@ network:
     version: 2
 ```
 Replace the IP addresses above with your desired configuration. Then reboot your system.
+#### Raspberry Pi OS / Debian version: 12 (bookwork)
+The network configuration can easily be done with the command nmtui
+```bash
+sudo nmtui
+```
 
 ### 10.  Get and build the edu_drive_ros2 software
 ```bash
