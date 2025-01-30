@@ -8,16 +8,13 @@ namespace edu
     Matrix::Matrix(Mat M)
     {
         _M.resize(M.size());
-        for(int i=0; i<M.size(); i++)
+        for(unsigned int i=0; i<M.size(); i++)
             _M[i] = M[i];
     }
 
     Matrix::Matrix(Matrix& M)
     {
-        //_M = M._M;
-        _M.resize(M.rows());
-        for(int i=0; i<M.rows(); i++)
-            _M[i] = M._M[i];
+        _M = M._M;
     }
 
     Matrix::~Matrix()
@@ -56,6 +53,19 @@ namespace edu
             }
         }
         return C;
+    }
+
+    Vec operator * (Matrix &A, Vec &v)
+    {
+        Vec vResult(A.rows(), 0.0);
+        for(int i=0; i<A.rows(); i++)
+        {
+            for(int j=0; j<A.cols(); j++)
+            {
+                vResult[i] += A(i,j) * v[j];
+            }
+        }
+        return vResult;
     }
 
     Matrix operator - (Matrix &A, Matrix &B)
@@ -156,14 +166,27 @@ namespace edu
         return compose(X11, X12, X21, X22);
     }
 
-    void Matrix::print()
+    Matrix Matrix::pseudoInverse()
     {
+        Matrix At = transposed();
+        edu::Matrix AtA = At * *this;
+        edu::Matrix B = AtA.inverse();
+        edu::Matrix C = B * At;
+        return C;
+    }
+
+    void Matrix::print(std::string name)
+    {
+        std::cout << name << std::endl;
+        std::cout << std::string(13*_M[0].size()+1, '-') << std::endl;
         for ( auto &row : _M )
         {
-            for ( auto x : row ) std::cout << std::setw( 12 ) << ( std::abs( x ) < 1e-9 ? 0.0 : x );
-                std::cout << '\n';
+            std::cout << "|";
+            for ( auto x : row )
+                std::cout << std::setw( 12 ) << ( std::abs( x ) < 1e-9 ? 0.0 : x ) << "|";
+            std::cout << std::endl;
         }
-        std::cout << std::endl;
+        std::cout << std::string(13*_M[0].size()+1, '-') << std::endl << std::endl;
     }
 
 }

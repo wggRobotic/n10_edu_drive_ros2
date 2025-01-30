@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cstdint>
+#include "Matrix.h"
 
 namespace edu
 {
@@ -33,12 +34,14 @@ namespace edu
         /**
          * Constructor
          * @param[in] absolute_mode Set odometry to absolute or relative mode
+         * @param[in] invKinematicModel Matrix of inverted kinematic vectors (Wheel spin to Twist conversion)
          * @param[in] kin_m0 Kinematic description of motor 0
          * @param[in] kin_m1 Kinematic description of motor 1
          * @param[in] kin_m2 Kinematic description of motor 2
          * @param[in] kin_m3 Kinematic description of motor 3
          */
-        Odometry(OdometryMode odometry_mode, std::vector<double> kin_m0, std::vector<double> kin_m1, std::vector<double> kin_m2, std::vector<double> kin_m3);
+        //Odometry(OdometryMode odometry_mode, std::vector<double> kin_m0, std::vector<double> kin_m1, std::vector<double> kin_m2, std::vector<double> kin_m3);
+        Odometry(OdometryMode odometry_mode, edu::Matrix invKinematicModel);
 
         /**
          * Destructor
@@ -125,6 +128,7 @@ namespace edu
 
         uint64_t _prev_time_ns;
 
+        edu::Matrix _invKinematics;
         std::vector<double> _inv_kinematics_0;
         std::vector<double> _inv_kinematics_1;
         std::vector<double> _inv_kinematics_2;

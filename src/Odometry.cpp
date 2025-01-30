@@ -4,15 +4,14 @@
 namespace edu
 {
     
-Odometry::Odometry(OdometryMode odometry_mode, std::vector<double> kin_m0, std::vector<double> kin_m1, std::vector<double> kin_m2, std::vector<double> kin_m3)
+//Odometry::Odometry(OdometryMode odometry_mode, std::vector<double> kin_m0, std::vector<double> kin_m1, std::vector<double> kin_m2, std::vector<double> kin_m3)
+Odometry::Odometry(OdometryMode odometry_mode, edu::Matrix invKinematicModel) : _invKinematics(invKinematicModel), _odometry_mode(odometry_mode)
 {
-    _odometry_mode = odometry_mode;
-
     // Invert kinematic description
     // ToDo: Validate for skid steering
-    _inv_kinematics_0 = {1.0F/kin_m0.at(0)/4.0F, 1.0F/kin_m1.at(0)/4.0F, 1.0F/kin_m2.at(0)/4.0F, 1.0F/kin_m3.at(0)/4.0F};
-    _inv_kinematics_1 = {1.0F/kin_m0.at(1)/4.0F, 1.0F/kin_m1.at(1)/4.0F, 1.0F/kin_m2.at(1)/4.0F, 1.0F/kin_m3.at(1)/4.0F};
-    _inv_kinematics_2 = {1.0F/kin_m0.at(2)/4.0F, 1.0F/kin_m1.at(2)/4.0F, 1.0F/kin_m2.at(2)/4.0F, 1.0F/kin_m3.at(2)/4.0F};
+    //_inv_kinematics_0 = {1.0F/kin_m0.at(0)/4.0F, 1.0F/kin_m1.at(0)/4.0F, 1.0F/kin_m2.at(0)/4.0F, 1.0F/kin_m3.at(0)/4.0F};
+    //_inv_kinematics_1 = {1.0F/kin_m0.at(1)/4.0F, 1.0F/kin_m1.at(1)/4.0F, 1.0F/kin_m2.at(1)/4.0F, 1.0F/kin_m3.at(1)/4.0F};
+    //_inv_kinematics_2 = {1.0F/kin_m0.at(2)/4.0F, 1.0F/kin_m1.at(2)/4.0F, 1.0F/kin_m2.at(2)/4.0F, 1.0F/kin_m3.at(2)/4.0F};
 
     reset();
 }
@@ -73,6 +72,7 @@ int Odometry::update(double p0, double p1, double p2, double p3)
         double dp1 = 0;
         double dp2 = 0;
         double dp3 = 0;
+        edu::Vec vOmega(4, 0.0);
 
         // In case absolute values are give, calculate the difference to prev. position
         if(_odometry_mode == ODOMETRY_RELATIVE_MODE){
@@ -88,9 +88,15 @@ int Odometry::update(double p0, double p1, double p2, double p3)
         }
 
         // Apply inverse kinematic model
-        double dx     = _inv_kinematics_0.at(0) * dp0 + _inv_kinematics_0.at(1) * dp1 + _inv_kinematics_0.at(2) * dp2 + _inv_kinematics_0.at(3) * dp3;
-        double dy     = _inv_kinematics_1.at(0) * dp0 + _inv_kinematics_1.at(1) * dp1 + _inv_kinematics_1.at(2) * dp2 + _inv_kinematics_1.at(3) * dp3;;
-        double dtheta =  _inv_kinematics_2.at(0) * dp0 + _inv_kinematics_2.at(1) * dp1 + _inv_kinematics_2.at(2) * dp2 + _inv_kinematics_2.at(3) * dp3;;
+        //double dx     = _inv_kinematics_0.at(0) * dp0 + _inv_kinematics_0.at(1) * dp1 + _inv_kinematics_0.at(2) * dp2 + _inv_kinematics_0.at(3) * dp3;
+        //double dy     = _inv_kinematics_1.at(0) * dp0 + _inv_kinematics_1.at(1) * dp1 + _inv_kinematics_1.at(2) * dp2 + _inv_kinematics_1.at(3) * dp3;;
+        //double dtheta =  _inv_kinematics_2.at(0) * dp0 + _inv_kinematics_2.at(1) * dp1 + _inv_kinematics_2.at(2) * dp2 + _inv_kinematics_2.at(3) * dp3;;
+
+        double dx = 0.0;
+        double dy = 0.0;
+        double dtheta = 0.0;
+        edu::Vec vTwist = _invKinematics * vOmega;
+
 
         if(!std::isnan(dx) || std::isinf(dx)) status = -1;
         if(!std::isnan(dy) || std::isinf(dy)) status = -1;
@@ -133,9 +139,13 @@ int Odometry::update(uint64_t time_ns, double w0, double w1, double w2, double w
         double p3 = w3 * dt_s / 60.0F * 2 * M_PI;
 
         // Apply inverse kinematic model
-        double dx     = _inv_kinematics_0.at(0) * p0 + _inv_kinematics_0.at(1) * p1 + _inv_kinematics_0.at(2) * p2 + _inv_kinematics_0.at(3) * p3;
-        double dy     = _inv_kinematics_1.at(0) * p0 + _inv_kinematics_1.at(1) * p1 + _inv_kinematics_1.at(2) * p2 + _inv_kinematics_1.at(3) * p3;;
-        double dtheta =  _inv_kinematics_2.at(0) * p0 + _inv_kinematics_2.at(1) * p1 + _inv_kinematics_2.at(2) * p2 + _inv_kinematics_2.at(3) * p3;;
+        //double dx     = _inv_kinematics_0.at(0) * p0 + _inv_kinematics_0.at(1) * p1 + _inv_kinematics_0.at(2) * p2 + _inv_kinematics_0.at(3) * p3;
+        //double dy     = _inv_kinematics_1.at(0) * p0 + _inv_kinematics_1.at(1) * p1 + _inv_kinematics_1.at(2) * p2 + _inv_kinematics_1.at(3) * p3;;
+        //double dtheta =  _inv_kinematics_2.at(0) * p0 + _inv_kinematics_2.at(1) * p1 + _inv_kinematics_2.at(2) * p2 + _inv_kinematics_2.at(3) * p3;;
+        
+        double dx = 0.0;
+        double dy = 0.0;
+        double dtheta = 0.0;
 
         if(std::isnan(dx) || std::isinf(dx)) status = -1;
         if(std::isnan(dy) || std::isinf(dy)) status = -1;

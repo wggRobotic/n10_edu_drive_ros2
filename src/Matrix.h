@@ -2,6 +2,7 @@
 #define __MATRIX_H
 
 #include <vector>
+#include <string>
 
 namespace edu
 {
@@ -37,14 +38,18 @@ public:
     double& operator () (unsigned int row, unsigned int col);
 
     friend Matrix operator * (Matrix &A, Matrix &B);
-    
+
+    friend Vec operator * (Matrix &A, Vec &v);
+
     Matrix subMatrix(int i1, int i2, int j1, int j2);
 
     Matrix transposed();
 
     Matrix inverse();
 
-    void print();
+    Matrix pseudoInverse();
+
+    void print(std::string name);
 
 private:
 

@@ -87,6 +87,7 @@ namespace edu
             exit(1);
         }
         
+        std::vector<std::vector<double>> kinematicModel;
         for (unsigned int i = 0; i < cp.size(); ++i)
         {
             _mc.push_back(new MotorController(&can, cp[i], verbosity));
@@ -94,6 +95,7 @@ namespace edu
             for(unsigned int j=0; j<_mc[i]->getMotorParams().size(); j++)
             {
             	std::vector<double> kinematics = _mc[i]->getMotorParams()[j].kinematics;
+                kinematicModel.push_back(kinematics);
 	         	double kx = kinematics[0];
 	         	double kw = kinematics[2];
 	         	float rpmMax = std::min(cp[i].motorParams[0].rpmMax, cp[i].motorParams[1].rpmMax); // the slowest motor determines the maximum speed of the system
@@ -109,8 +111,10 @@ namespace edu
 		         }
             }
         }
+        edu::Matrix K(kinematicModel);
+        edu::Matrix Kinv = K.pseudoInverse();
 
-        _odometry = new Odometry(ODOMETRY_ABSOLUTE_MODE, _mc[0]->getMotorParams()[0].kinematics, _mc[0]->getMotorParams()[1].kinematics, _mc[1]->getMotorParams()[0].kinematics, _mc[1]->getMotorParams()[1].kinematics);
+        _odometry = new Odometry(ODOMETRY_ABSOLUTE_MODE, Kinv);
         
         RCLCPP_INFO_STREAM(this->get_logger(), "Instanciated robot with vMax: " << _vMax << " m/s and omegaMax: " << _omegaMax << " rad/s");
     }
