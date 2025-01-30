@@ -1,8 +1,17 @@
 #include "../Matrix.h"
 #include <iostream>
 
-int
-main ()
+/**
+ * @brief Simple test program to check functionality of Matrix class.
+ *        It shows how a kinematic matrix could be inverted in order to
+ *        get the inverse for odometry calculation. The model is tested with
+ *        2-, 4-, 6- and 8-wheeled systems.
+ *        Compile this program in this folder with:
+ *        $ g++ matrix_test.cpp ../Matrix.cpp -o matrix_test
+ * @author Stefan May
+ * @date 30.1.2025
+ */
+int main ()
 {
   double r = 0.1;
   double lx = 0.3;

@@ -82,13 +82,13 @@ namespace edu
         return C;
     } 
 
-    Matrix Matrix::subMatrix(int i1, int i2, int j1, int j2)
+    Matrix Matrix::subMatrix(int row1, int row2, int col1, int col2)
     {
-        int rows = i2 - i1 + 1, cols = j2 - j1 + 1;
+        int rows = row2 - row1 + 1, cols = col2 - col1 + 1;
         Mat M( rows, Vec( cols ) );
-        for ( int i = i1, r = 0; i <= i2; i++, r++ )
+        for ( int i = row1, r = 0; i <= row2; i++, r++ )
         {
-            auto it1 = _M[i].begin() + j1, it2 = _M[i].begin() + j2 + 1;
+            auto it1 = _M[i].begin() + col1, it2 = _M[i].begin() + col2 + 1;
             copy( it1, it2, M[r].begin() );
         }
         return Matrix(M);
@@ -142,6 +142,8 @@ namespace edu
         
         // Strassen's matrix multiplication
         // Partition matrix into four sub matrices
+        // See Weisstein, Eric W. "Strassen's Formulas". MathWorld. 
+        // URL: https://mathworld.wolfram.com/StrassenFormulas.html
         int k = r / 2;
         Matrix A11 = subMatrix(0, k - 1, 0, k - 1 );
         Matrix A12 = subMatrix(0, k - 1, k, r - 1 );
@@ -154,16 +156,16 @@ namespace edu
         Matrix R4  = A21 * R3;
         Matrix R5  = R4 - A22;
         Matrix R6  = R5.inverse();
-        Matrix X12 = R3 * R6;
-        Matrix X21 = R6 * R2;
-        Matrix R7  = R3 * X21;
-        Matrix X11 = R1 - R7;
-        Matrix X22(R6);
-        for ( auto &row : X22._M )
+        Matrix C12 = R3 * R6;
+        Matrix C21 = R6 * R2;
+        Matrix R7  = R3 * C21;
+        Matrix C11 = R1 - R7;
+        Matrix C22(R6);
+        for ( auto &row : C22._M )
         {
             for ( auto &e : row ) e = -e;
         }
-        return compose(X11, X12, X21, X22);
+        return compose(C11, C12, C21, C22);
     }
 
     Matrix Matrix::pseudoInverse()
