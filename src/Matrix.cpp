@@ -133,8 +133,9 @@ namespace edu
             // avoid division by zero
             if ( std::abs( value ) < 1e-16 )
             {
-                std::cerr << "Non-invertible matrix passed" << std::endl;
-                return Matrix(Mat{0});
+                std::cerr << "WARNING: Non-invertible matrix passed!" << std::endl;
+                Mat A(1, Vec(1, 0.0));
+                return Matrix(A);
             }
             Mat A(1, Vec( 1, 1.0 / value ));
             return Matrix(A);
