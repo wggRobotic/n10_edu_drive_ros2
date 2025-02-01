@@ -90,14 +90,28 @@ sudo apt install can-utils build-essential git
 ```
 You might need to reboot the Pi with the command `sudo reboot`
 
-### 5. Configure the firmware for the CAN interfaces
+### 5. Kernel upgrade (Ubuntu 24.04.1 LTS)
+Unfortunately, there is a bug in the handling of our CAN module in the kernel version of Ubuntu 24.04.1 LTS used. This bug leads to a segmentation fault during the boot process. However, this bug has already been recognized and is already in the list of proposed fixes for version 24.04.1 LTS. It is also to be expected that this problem will be solved from version 24.04.2 LTS. To install the proposed kernel, these sources must be activated for the package manager. Therefore, in the file `/etc/apt/sources.list.d/ubuntu.sources`, add the entry `noble-proposed` so that the suites are defined as follows:
+`Suites: noble noble-updates noble-backports noble-proposed`
+The kernel can then be installed:
+```bash
+sudo apt update
+sudo apt install linux-image-6.8.0-1019-raspi/noble-proposed
+sudo reboot
+```
+After booting, you can use the following command to check whether the current kernel is installed:
+```bash
+uname -r
+```
+
+### 6. Configure the firmware for the CAN interfaces
    
 Add the configuration of all three can interfaces to the /boot/firmware/config.txt file. This can be done with the following command:
 ```bash
 sudo bash -c "echo -e '\ndtoverlay=spi1-2cs\ndtoverlay=mcp251xfd,spi0-0,oscillator=40000000,interrupt=25\ndtoverlay=mcp251xfd,spi0-1,oscillator=40000000,interrupt=13\ndtoverlay=mcp251xfd,spi1-0,oscillator=40000000,interrupt=24' >> /boot/firmware/config.txt"
 ```
 
-### 6. Add udev rules and services for CAN interfaces
+### 7. Add udev rules and services for CAN interfaces
    
 The extension board for the Raspberry Pi provides three CANFD interfaces. To ensure that the naming of the interfaces is the same after each boot process, a udev rule must be created in the /etc/udev/rules.d directory. Create the file /etc/udev/rules.d/42-mcp251xfd.rules with the following content:
 ```bash
@@ -125,9 +139,10 @@ Type=oneshot
 ExecStart=ip link set CAN2 up type can bitrate 500000
 ```
 
-### 7. Install ROS
+### 8. Install ROS
 Select the ROS [distribution](https://docs.ros.org/en/rolling/Releases.html) depending on the installed version of your operating system. For Ubuntu Server 24.04 install [ROS Jazzy](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html).
 Read the official documentation for reference on [building from source](https://docs.ros.org/en/jazzy/Installation/Alternatives/Ubuntu-Development-Setup.html) and [prebuilt packages](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debians.html) for more detail.\
+> **Important hint:** It is important that UTF8 is supported. Other language settings, such as those specified in the ROS2 documentation, should work. We have also tested the German settings. For German settings, please replace the strings “en_US” with “de_DE”.
 The following commands prepare the installation of ROS:
 ```bash
 sudo apt update && sudo apt install locales
@@ -149,13 +164,13 @@ sudo apt install ros-dev-tools
 sudo reboot
 ```
 
-### 8. Add ROS Distribution to .bashrc
+### 9. Add ROS Distribution to .bashrc
 To avoid having to re-source the setup.bash file of the ros-distribution in every new terminal, it can be added to the ~/.bashrc file.
 ```bash
 echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
 ```
 
-### 9.  Optional: Static IP address
+### 10.  Optional: Static IP address
 #### Ubuntu 22.04. server edition
 By default, the configuration of the Ubuntu 22.04. server edition is set to DHCP. If you would like to set a static IP address, you can do this by making the following adjustment:
 ```bash
@@ -183,7 +198,7 @@ The network configuration can easily be done with the command nmtui
 sudo nmtui
 ```
 
-### 10.  Get and build the edu_drive_ros2 software
+### 11.  Get and build the edu_drive_ros2 software
 ```bash
 mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
