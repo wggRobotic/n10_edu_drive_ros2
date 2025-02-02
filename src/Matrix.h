@@ -85,6 +85,12 @@ public:
     Matrix subMatrix(int row1, int row2, int col1, int col2);
 
     /**
+     * @brief Calculate determinant
+     * @return determinant of Matrix
+     */
+    double determinant();
+
+    /**
      * @brief Get transposed matrix as new instance
      * @return Transpose of matrix 
      */
