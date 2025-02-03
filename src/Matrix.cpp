@@ -94,6 +94,47 @@ namespace edu
         return Matrix(M);
     }
 
+    double Matrix::determinant()
+    {
+        if(rows()!=cols())
+        {
+            std::cout << "WARNING: Determinat can only be computed for square matrices" << std::endl;
+            return 0.0;
+        }
+        double det = 1.0;
+        double n = cols();
+        for (int i = 0; i < n; i++)
+        {
+            int pivot = i;
+            for (int j = i + 1; j < n; j++)
+            {
+                if (abs(_M[j][i]) > abs(_M[pivot][i]))
+                {
+                    pivot = j;
+                }
+            }
+            if (pivot != i)
+            {
+                std::swap(_M[i], _M[pivot]);
+                det *= -1;
+            }
+            if (_M[i][i] == 0)
+            {
+                return 0;
+            }
+            det *= _M[i][i];
+            for (int j = i + 1; j < n; j++)
+            {
+                double factor = _M[j][i] / _M[i][i];
+                for (int k = i + 1; k < n; k++)
+                {
+                    _M[j][k] -= factor * _M[i][k];
+                }
+            }
+        }
+        return det;
+    }
+
     Matrix Matrix::compose( const Matrix &A11, const Matrix &A12, const Matrix &A21, const Matrix &A22 )
     {
         int k = A11.rows();           
@@ -150,7 +191,6 @@ namespace edu
         Matrix A12 = subMatrix(0, k - 1, k, r - 1 );
         Matrix A21 = subMatrix(k, r - 1, 0, k - 1 );
         Matrix A22 = subMatrix(k, r - 1, k, r - 1 );
-        
         Matrix R1  = A11.inverse();
         Matrix R2  = A21 * R1;
         Matrix R3  = R1 * A12;
