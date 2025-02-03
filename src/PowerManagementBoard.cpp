@@ -19,7 +19,7 @@ PowerManagementBoard::PowerManagementBoard(SocketCAN* can, bool verbosity)
   makeCanStdID(SYSID_PWRMGMT, NODEID_PWRMGMT, &_inputAddress, &_outputAddress, &_broadcastAddress);
   _cf.can_id = _inputAddress;
   if(verbosity)
-    std::cout << "#PowerManagementBoard CAN Input ID: " << _inputAddress << " CAN Output ID: " << _outputAddress << std::endl;
+    std::cout << "#PowerManagementBoard CAN Input ID: " << std::hex << _inputAddress << " CAN Output ID: " << _outputAddress << std::endl;
 
   canid_t canidOutput = _outputAddress;
 
