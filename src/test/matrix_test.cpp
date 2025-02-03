@@ -49,5 +49,5 @@ int main ()
   edu::Vec vTwist = D * v;
   std::cout << "vx=" << vTwist[0] << std::endl;
   std::cout << "vy=" << vTwist[1] << std::endl;
-  std::cout << "omeag=" << vTwist[2] << std::endl;
+  std::cout << "omega=" << vTwist[2] << std::endl;
 }
