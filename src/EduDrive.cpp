@@ -17,7 +17,7 @@
 namespace edu
 {
 
-    EduDrive::EduDrive() : Node("edu_drive_node")
+    EduDrive::EduDrive() : Node("n10_edu_drive_node")
     {
 
     }
@@ -45,6 +45,8 @@ namespace edu
         _subJoy     = this->create_subscription<sensor_msgs::msg::Joy>("joy", 1, std::bind(&EduDrive::joyCallback, this, std::placeholders::_1));
         _subVel     = this->create_subscription<geometry_msgs::msg::Twist>("vel/teleop", 10, std::bind(&EduDrive::velocityCallback, this, std::placeholders::_1));
         _srvEnable  = this->create_service<std_srvs::srv::SetBool>("enable", std::bind(&EduDrive::enableCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
+        _subRPM = this->create_subscription<std_msgs::msg::Float32MultiArray>("/n10/rpm", 10, std::bind(&EduDrive::controlMotorsIndividually, this, std::placeholders::_1));
 
         // Publisher of motor shields
         _pubEnabled = this->create_publisher<std_msgs::msg::ByteMultiArray>("enabled", 1);
@@ -248,6 +250,27 @@ namespace edu
                 //std::cout << "#EduDrive Setting RPM for drive" << i << " to " << w[0] << " " << w[1] << std::endl;
                 RCLCPP_INFO_STREAM(this->get_logger(), "#EduDrive Setting RPM for drive" << i << " to " << w[0] << " " << w[1]);
         }
+    }
+
+    void EduDrive::controlMotorsIndividually(const std_msgs::msg::Float32MultiArray::SharedPtr msg) {
+
+        _lastCmd = this->get_clock()->now();
+  
+        if (msg->data.size() == _mc.size() * 2) for (unsigned int i = 0; i < _mc.size(); ++i)
+        {
+            float w[2] = {msg->data[2 * i], msg->data[2 * i + 1]};
+
+            _mc[i]->setRPM(w);
+
+            if (_verbosity)
+                RCLCPP_INFO_STREAM(this->get_logger(), "#EduDrive Setting RPM for MotorController " << i << " to " << w[0] << " " << w[1]);
+        }
+        else 
+        {
+            if (_verbosity)
+                RCLCPP_WARN_STREAM(this->get_logger(), "#EduDrive Received RPM-message of length " << msg->data.size() << " instead of expected length " << _mc.size() * 2 << " (" << _mc.size() << " Motor Controllers)");
+        }
+  
     }
 
     void EduDrive::receiveCAN()

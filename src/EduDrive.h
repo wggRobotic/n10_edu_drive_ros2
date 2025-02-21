@@ -92,12 +92,16 @@ private:
 
     void controlMotors(float vFwd, float vLeft, float omega);
 
+    void controlMotorsIndividually(const std_msgs::msg::Float32MultiArray::SharedPtr msg);
+
     bool enableCallback(const std::shared_ptr<rmw_request_id_t> header, const std::shared_ptr<std_srvs::srv::SetBool_Request> request, const std::shared_ptr<std_srvs::srv::SetBool_Response> response);
 
     // Input topics / services
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr           _subJoy;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr       _subVel;
     rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr               _srvEnable;
+
+    rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr _subRPM;
 
     // Data available from motor controllers
     rclcpp::Publisher<std_msgs::msg::ByteMultiArray>::SharedPtr      _pubEnabled;
